@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shop List</string>
+
+    <!-- List  -->
+    	<!-- List row -->
+    	<string name="no_lists">No Lists Yet</string>
+    	<string name="item_timestamp_text_row">Created: </string>
+    	
+    	<!-- Add/Edit -->
+	    <string name="list_name">List name</string>
+	    
+	    <!-- Floating Menu -->
+	    <string name="edit_list">Edit List</string>
+	    <string name="menu_list_copy">Copy List</string>
+	    <!-- Menu TODO: replace with action bar -->
+	    <string name="menu_list_insert">Add List</string>
+	    <string name="menu_list_delete">Delete List</string>
+	    <string name="menu_list_edit">Edit List</string>
+	    <string name="menu_list_choose">Choose List</string>
+	    <!-- Action Bar -->
+	    <string name="list_action_add">New List</string>
+    <!-- End List -->
+    
+    <!-- Items -->
+	    <!-- Items row -->
+	    <string name="no_items">No Items Yet</string>
+	    <string name="item_quant_text">Quantity: </string>
+	    <string name="item_purchased_text">Purchased: </string>
+	    
+	    <!-- Add/Edit -->
+	    <string name="item_name">Name: </string>
+	    <string name="item_quant">Quantity</string>
+	    <string name="edit_item">Edit Item</string>
+	    
+		<!-- Menu TODO: replace with action bar -->
+		<string name="menu_item_insert">Add Item</string>
+		<string name="menu_item_delete">Delete Item</string>
+	    
+	    <!-- Default values -->
+	    <string name="item_default_quant">1</string>
+	    <string name="item_default_purchased">No</string>
+	  
+	    <!-- Action Bar -->
+	    <string name="item_action_add">New Item</string>
+	    <string name="item_action_choose_list">Choose List</string>
+    <!-- End Items Strings -->
+
+	<!-- Buttons -->
+    	<string name="confirm">Confirm</string>
+    <!-- End Buttons -->
+    
+    <string name="action_search">action_search</string>
+    <string name="action_settings">action_settings</string>
+    
+    
+</resources>
