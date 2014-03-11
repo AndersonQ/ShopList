@@ -19,11 +19,15 @@
         </activity>
        
         <activity android:name="br.eti.andersonq.ItemEdit" 
-            android:label="@string/app_name"/>
+            android:label="@string/app_name"
+            android:parentActivityName="br.eti.andersonq.ItemsMain"/>
+            
         <activity android:name="br.eti.andersonq.ListsEdit" 
-            android:label="@string/app_name"/>
-        <activity android:name="br.eti.andersonq.ListsMain" 
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:parentActivityName="br.eti.andersonq.ListsMain"/>
+            
+        <activity android:name="br.eti.andersonq.ListsMain"
+			android:label="@string/list_choose"/>
    
 	</application>
 </manifest> 
