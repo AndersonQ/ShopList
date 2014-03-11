@@ -5,6 +5,7 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -114,7 +115,11 @@ public class ItemsMain extends ListActivity
         Intent i = new Intent(this, ListsMain.class);
         startActivityForResult(i, ACTIVITY_LIST_MAIN);
     }
+    
     @Override
+    /*
+     * Called to edit a item
+     */
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         Intent i = new Intent(this, ItemEdit.class);
