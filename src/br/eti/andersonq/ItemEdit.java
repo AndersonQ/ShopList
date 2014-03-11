@@ -4,6 +4,7 @@ import br.eti.andersonq.shoplist.R;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,9 +21,9 @@ public class ItemEdit extends Activity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    	super.onCreate(savedInstanceState);
         setContentView(R.layout.item_edit);
-        setTitle(R.string.edit_item);
+        setTitle(R.string.item_create);
 
         mDbHelper = new DbAdapter(this);
         mDbHelper.open();
@@ -56,7 +57,8 @@ public class ItemEdit extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        saveState();
+        //TODO Save state, but not on the database
+        //saveState();
     }
 
 	@Override
@@ -68,15 +70,23 @@ public class ItemEdit extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveState();
+        //TODO Save state, but not on the database
+        //saveState();
         outState.putSerializable(DbAdapter.ITEM_ID, mId);
     }
 
-	private void populateFields() {
+	private void populateFields() 
+	{		
+		//If it is creating a new item there is no information to populate fields
 		if(mId != null)
 		{
 			Cursor note = mDbHelper.fetchItem(mId);
 			startManagingCursor(note);
+			
+			//Set activity title
+			setTitle(R.string.item_edit);
+			
+			//Fill the fields with item information
 			mNameText.setText(note.getString(
 					note.getColumnIndexOrThrow(DbAdapter.ITEM_NAME)));
 			mQuantText.setText(

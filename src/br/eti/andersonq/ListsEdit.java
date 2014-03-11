@@ -21,7 +21,7 @@ public class ListsEdit extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lists_edit);
-        setTitle(R.string.edit_list);
+        setTitle(R.string.list_create);
 
         mDbHelper = new DbAdapter(this);
         mDbHelper.open();
@@ -53,7 +53,8 @@ public class ListsEdit extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        saveState();
+        //TODO Save state, but not on the database
+        //saveState();
     }
 
 	@Override
@@ -65,15 +66,23 @@ public class ListsEdit extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveState();
+        //TODO Save state, but not on the database
+        //saveState();
         outState.putSerializable(DbAdapter.LIST_ID, mListID);
     }
 
-	private void populateFields() {
+	private void populateFields()
+	{
+		//If it is creating a new item there is no information to populate fields
 		if(mListID != null)
 		{
 			Cursor note = mDbHelper.fetchList(mListID);
 			startManagingCursor(note);
+			
+			//Set activity title
+			setTitle(R.string.list_edit);
+			
+			//Fill the field with list information
 			mListName.setText(
 					note.getString(note.getColumnIndexOrThrow(DbAdapter.LIST_NAME)));
 		}
