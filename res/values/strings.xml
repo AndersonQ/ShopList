@@ -8,10 +8,14 @@
     	<string name="item_timestamp_text_row">Created: </string>
     	
     	<!-- Add/Edit -->
+    	<string name="list_edit">Edit list</string>
+    	<string name="list_create">Create list</string>
 	    <string name="list_name">List name</string>
+	    <string name="list_edit_hint">List name</string>
+	    <string name="list_choose">Choose list</string>
 	    
 	    <!-- Floating Menu -->
-	    <string name="edit_list">Edit List</string>
+	    <!-- <string name="list_edit">Edit List</string> -->
 	    <string name="menu_list_copy">Copy List</string>
 	    <!-- Menu TODO: replace with action bar -->
 	    <string name="menu_list_insert">Add List</string>
@@ -29,9 +33,11 @@
 	    <string name="item_purchased_text">Purchased: </string>
 	    
 	    <!-- Add/Edit -->
+	    <string name="item_edit">Edit item</string>
+    	<string name="item_create">Create item</string>
 	    <string name="item_name">Name: </string>
 	    <string name="item_quant">Quantity</string>
-	    <string name="edit_item">Edit Item</string>
+	    <string name="item_edit_hint">Item name</string>
 	    
 		<!-- Menu TODO: replace with action bar -->
 		<string name="menu_item_insert">Add Item</string>
