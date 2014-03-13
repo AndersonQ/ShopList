@@ -44,6 +44,7 @@ public class ListsEdit extends Activity {
         {
             public void onClick(View view) 
             {
+            	saveState();
                 setResult(RESULT_OK);
                 finish();
             }
