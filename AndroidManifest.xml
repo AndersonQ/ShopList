@@ -25,9 +25,9 @@
         <activity android:name="br.eti.andersonq.ListsEdit" 
             android:label="@string/app_name"
             android:parentActivityName="br.eti.andersonq.ListsMain"/>
-            
         <activity android:name="br.eti.andersonq.ListsMain"
-			android:label="@string/list_choose"/>
+		android:label="@string/list_choose"
+            	android:parentActivityName="br.eti.andersonq.ListsMain"/>
    
 	</application>
 </manifest> 
