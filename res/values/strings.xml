@@ -1,63 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Shop List</string>
 
-    <!-- List  -->
-    	<!-- List row -->
-    	<string name="no_lists">No Lists Yet</string>
-    	<string name="item_timestamp_text_row">Created: </string>
-    	
-    	<!-- Add/Edit -->
-    	<string name="list_edit">Edit list</string>
-    	<string name="list_create">Create list</string>
-	    <string name="list_name">List name</string>
-	    <string name="list_edit_hint">List name</string>
-	    <string name="list_choose">Choose list</string>
-	    
-	    <!-- Floating Menu -->
-	    <!-- <string name="list_edit">Edit List</string> -->
-	    <string name="menu_list_copy">Copy List</string>
-	    <!-- Menu TODO: replace with action bar -->
-	    <string name="menu_list_insert">Add List</string>
-	    <string name="menu_list_delete">Delete List</string>
-	    <string name="menu_list_edit">Edit List</string>
-	    <string name="menu_list_choose">Choose List</string>
-	    <!-- Action Bar -->
-	    <string name="list_action_add">New List</string>
+    <!-- List -->
+    <!-- List row -->
+    <string name="no_lists">No Lists Yet</string>
+    <string name="item_timestamp_text_row">Created: </string>
+
+    <!-- Add/Edit -->
+    <string name="list_edit">Edit list</string>
+    <string name="list_create">Create list</string>
+    <string name="list_copy">Copy List</string>
+    <string name="list_name">List name</string>
+    <string name="list_new_name">New list name</string>
+    <string name="list_edit_hint">List name</string>
+    <string name="list_choose">Choose list</string>
+
+    <!-- Floating Menu -->
+    <!-- <string name="list_edit">Edit List</string> -->
+    <string name="menu_list_copy">Copy List</string>
+    <!-- Menu TODO: replace with action bar -->
+    <string name="menu_list_insert">Add List</string>
+    <string name="menu_list_delete">Delete List</string>
+    <string name="menu_list_edit">Edit List</string>
+    <string name="menu_list_choose">Choose List</string>
+    <!-- Action Bar -->
+    <string name="list_action_add">New List</string>
     <!-- End List -->
-    
+
+
     <!-- Items -->
-	    <!-- Items row -->
-	    <string name="no_items">No Items Yet</string>
-	    <string name="item_quant_text">Quantity: </string>
-	    <string name="item_purchased_text">Purchased: </string>
-	    
-	    <!-- Add/Edit -->
-	    <string name="item_edit">Edit item</string>
-    	<string name="item_create">Create item</string>
-	    <string name="item_name">Name: </string>
-	    <string name="item_quant">Quantity</string>
-	    <string name="item_edit_hint">Item name</string>
-	    
-		<!-- Menu TODO: replace with action bar -->
-		<string name="menu_item_insert">Add Item</string>
-		<string name="menu_item_delete">Delete Item</string>
-	    
-	    <!-- Default values -->
-	    <string name="item_default_quant">1</string>
-	    <string name="item_default_purchased">No</string>
-	  
-	    <!-- Action Bar -->
-	    <string name="item_action_add">New Item</string>
-	    <string name="item_action_choose_list">Choose List</string>
+    <!-- Items row -->
+    <string name="no_items">No Items Yet</string>
+    <string name="item_quant_text">Quantity: </string>
+    <string name="item_purchased_text">Purchased: </string>
+
+    <!-- Add/Edit -->
+    <string name="item_edit">Edit item</string>
+    <string name="item_create">Create item</string>
+    <string name="item_name">Name: </string>
+    <string name="item_quant">Quantity</string>
+    <string name="item_edit_hint">Item name</string>
+
+    <!-- Menu TODO: replace with action bar -->
+    <string name="menu_item_insert">Add Item</string>
+    <string name="menu_item_delete">Delete Item</string>
+    <string name="menu_item_edit">Edit Item</string>
+
+    <!-- Default values -->
+    <string name="item_default_quant">1</string>
+    <string name="item_default_purchased">No</string>
+
+    <!-- Action Bar -->
+    <string name="item_action_add">New Item</string>
+    <string name="item_action_choose_list">Choose List</string>
     <!-- End Items Strings -->
 
-	<!-- Buttons -->
-    	<string name="confirm">Confirm</string>
+
+    <!-- Buttons -->
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
     <!-- End Buttons -->
-    
+
     <string name="action_search">action_search</string>
     <string name="action_settings">action_settings</string>
-    
-    
+    <string name="title_activity_copy_list">Copy List</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_list_copy">List Copy</string>
+    <string name="title_activity_item_edit_frag">Edit Item</string>
+
 </resources>
