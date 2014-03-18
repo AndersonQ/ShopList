@@ -1,14 +1,11 @@
 package br.eti.andersonq;
 
 import br.eti.andersonq.shoplist.R;
+import android.app.FragmentManager;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.text.Html;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,10 +15,8 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.TextView;
-import android.widget.Toast;
 
-public class ItemsMain extends ListActivity 
+public class ItemsMain extends ListActivity implements Update
 {
 	//Tag to debug
     private static final String TAG = "ItemsMain";
@@ -36,6 +31,7 @@ public class ItemsMain extends ListActivity
 
     private DbAdapter mDbHelper;
 
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,12 +73,12 @@ public class ItemsMain extends ListActivity
         switch(item.getItemId()) 
         {
         	case R.id.item_action_add:
-        		createItem();
+        		//Create item 
+        		editItem(-1);
                 return true;
         	case R.id.item_action_choose_list:
         		chooseList();
             	return true;
-
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -108,27 +104,30 @@ public class ItemsMain extends ListActivity
                 return true;
             case ITEM_EDIT_ID:
             	editItem(info.id);
-            	return true;           	
+            	return true;
         }
         return super.onContextItemSelected(item);
     }
-
-    private void createItem() {
-        Intent i = new Intent(this, ItemEdit.class);
-        startActivityForResult(i, ACTIVITY_ITEM_CREATE);
-    }
     
+	@Override
+	public void onSaveState() 
+	{
+		fillData();
+	}
+    
+    /*
+     * Call Fragment to create or edit a item
+     * If id == -1 it will create a item, otherwise will edit the item with
+     * the specified id
+     */
     private void editItem(long id)
     {
-        Intent i = new Intent(this, ItemEdit.class);
-        i.putExtra(DbAdapter.ITEM_ID, id);
-        startActivityForResult(i, ACTIVITY_ITEM_EDIT);
-
-    }
-    
-    private void createList() {
-        Intent i = new Intent(this, ListsEdit.class);
-        startActivityForResult(i, ACTIVITY_LIST_CREATE);
+    	ItemEditFrag fire = new ItemEditFrag();
+    	FragmentManager manager = getFragmentManager();
+    	Bundle args = new Bundle();
+    	args.putInt(ItemEditFrag.ITEM_ID, (int) id);
+    	fire.setArguments(args);
+    	fire.show(manager, "FRAGMENT");
     }
 
     private void chooseList() {

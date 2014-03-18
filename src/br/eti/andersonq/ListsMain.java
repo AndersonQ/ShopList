@@ -1,6 +1,7 @@
 package br.eti.andersonq;
 
 import br.eti.andersonq.shoplist.R;
+import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +19,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class ListsMain extends ListActivity 
+public class ListsMain extends ListActivity implements Update
 {
 	//Tag to debug
 	private static final String TAG = "ListsMain";
@@ -64,7 +65,6 @@ public class ListsMain extends ListActivity
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_action_bar, menu);
 
-        //menu.add(0, INSERT_ID, 0, R.string.menu_list_insert);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -73,7 +73,8 @@ public class ListsMain extends ListActivity
         switch(item.getItemId()) 
         {
         case R.id.list_action_add:
-        	createList();
+        	//Create item
+        	editList(-1);
             return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -109,11 +110,6 @@ public class ListsMain extends ListActivity
         return super.onContextItemSelected(item);
     }
 
-	private void createList() {
-        Intent i = new Intent(this, ListsEdit.class);
-        startActivityForResult(i, ACTIVITY_CREATE);
-    }
-
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
@@ -143,19 +139,31 @@ public class ListsMain extends ListActivity
         fillData();
     }
     
+	@Override
+	public void onSaveState() 
+	{
+		fillData();
+	}
+	
     private void editList(long id)
     {
-        Intent i = new Intent(this, ListsEdit.class);
-        i.putExtra(DbAdapter.LIST_ID, id);
-        
-        int tmp = (int) id;
-        DbAdapter.setCurrentListID(tmp);
-        
-        startActivityForResult(i, ACTIVITY_EDIT);
+    	ListsEditFrag fire = new ListsEditFrag();
+    	FragmentManager manager = getFragmentManager();
+    	Bundle args = new Bundle();
+    	args.putInt(ListsEditFrag.LIST_ID, (int) id);
+    	fire.setArguments(args);
+    	fire.show(manager, "FRAGMENT");
     }
     
     private void copyList(long id) 
     {
+    	ListsCopyFrag fire = new ListsCopyFrag();
+    	FragmentManager manager = getFragmentManager();
+    	Bundle args = new Bundle();
+    	args.putInt(ListsCopyFrag.OLD_LIST_ID, (int) id);
+    	fire.setArguments(args);
+    	fire.show(manager, "FRAGMENT");
+    	/*
         Intent i = new Intent(this, ListsCopy.class);
         i.putExtra(DbAdapter.LIST_ID, id);
         
@@ -163,6 +171,7 @@ public class ListsMain extends ListActivity
         DbAdapter.setCurrentListID(tmp);
         
         startActivityForResult(i, ACTIVITY_EDIT);
+        */
 		
 	}
 }
