@@ -25,11 +25,9 @@ public class ListsEdit extends Activity {
 
         mDbHelper = new DbAdapter(this);
         mDbHelper.open();
-        
+       
         mListName = (EditText) findViewById(R.id.list_edit_title);
         
-        Button confirmButton = (Button) findViewById(R.id.confirm);
-
         mListID = (savedInstanceState == null) ? null :
             (Long) savedInstanceState.getSerializable(DbAdapter.LIST_ID);
         if (mListID == null) {
@@ -37,18 +35,11 @@ public class ListsEdit extends Activity {
             mListID = extras != null ? extras.getLong(DbAdapter.LIST_ID)
                                     : null;
         }
-       
+        
+        //Associate methods to activity buttons
+        createButtons();
+        //Populate field
         populateFields();
-
-        confirmButton.setOnClickListener(new View.OnClickListener() 
-        {
-            public void onClick(View view) 
-            {
-            	saveState();
-                setResult(RESULT_OK);
-                finish();
-            }
-        });
     }
 
     @Override
@@ -71,7 +62,7 @@ public class ListsEdit extends Activity {
         //saveState();
         outState.putSerializable(DbAdapter.LIST_ID, mListID);
     }
-
+    
 	private void populateFields()
 	{
 		//If it is creating a new item there is no information to populate fields
@@ -102,5 +93,31 @@ public class ListsEdit extends Activity {
 		{
 			mDbHelper.updateList(mListID, listName);
 		}
+	}
+	
+	private void createButtons()
+	{
+        Button confirmButton = (Button) findViewById(R.id.confirm);
+        Button cancelButton = (Button) findViewById(R.id.cancel);
+        
+        //Confirm button
+        confirmButton.setOnClickListener(new View.OnClickListener() 
+        {
+            public void onClick(View view) 
+            {
+            	saveState();
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
+        //Cancel button
+        cancelButton.setOnClickListener(new View.OnClickListener() 
+        {
+            public void onClick(View view) 
+            {
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
 	}
 }
