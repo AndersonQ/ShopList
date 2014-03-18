@@ -2,6 +2,7 @@ package br.eti.andersonq;
 
 import br.eti.andersonq.shoplist.R;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class ListsMain extends ListActivity 
@@ -98,14 +100,8 @@ public class ListsMain extends ListActivity
                 fillData();
                 return true;
             case EDIT_ID:
-                Intent i = new Intent(this, ListsEdit.class);
-                i.putExtra(DbAdapter.LIST_ID, id);
-                
-                int tmp = (int) id;
-                DbAdapter.setCurrentListID(tmp);
-                
-                startActivityForResult(i, ACTIVITY_EDIT);
-                return true;
+            	editList(id);
+            	return true;
         }
         return super.onContextItemSelected(item);
     }
@@ -118,6 +114,10 @@ public class ListsMain extends ListActivity
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+        
+        /*
+         * Starts ItemMain activity
+         */
         Intent i = new Intent(this, ItemsMain.class);
         i.putExtra(DbAdapter.LIST_ID, id);
         
@@ -125,11 +125,29 @@ public class ListsMain extends ListActivity
         DbAdapter.setCurrentListID(tmp);
         
         startActivityForResult(i, ACTIVITY_EDIT);
+        /**/
+        
+    	Context context = getApplicationContext();
+    	CharSequence text = "List selected";
+    	int duration = Toast.LENGTH_SHORT;
+    	Toast toast = Toast.makeText(context, text, duration);
+    	toast.show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         fillData();
+    }
+    
+    private void editList(long id)
+    {
+        Intent i = new Intent(this, ListsEdit.class);
+        i.putExtra(DbAdapter.LIST_ID, id);
+        
+        int tmp = (int) id;
+        DbAdapter.setCurrentListID(tmp);
+        
+        startActivityForResult(i, ACTIVITY_EDIT);
     }
 }
