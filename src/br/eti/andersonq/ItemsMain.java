@@ -2,9 +2,12 @@ package br.eti.andersonq;
 
 import br.eti.andersonq.shoplist.R;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -15,6 +18,8 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class ItemsMain extends ListActivity 
 {
@@ -27,6 +32,7 @@ public class ItemsMain extends ListActivity
     private static final int ACTIVITY_LIST_MAIN = 4;
 
     private static final int ITEM_DELETE_ID = Menu.FIRST;
+    private static final int ITEM_EDIT_ID = Menu.FIRST + 1;
 
     private DbAdapter mDbHelper;
 
@@ -86,17 +92,23 @@ public class ItemsMain extends ListActivity
             ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, ITEM_DELETE_ID, 0, R.string.menu_item_delete);
+        menu.add(0, ITEM_EDIT_ID, 0, R.string.menu_item_edit);
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    public boolean onContextItemSelected(MenuItem item) 
+    {
+    	AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+    	
         switch(item.getItemId()) 
         {
             case ITEM_DELETE_ID:
-                AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
                 mDbHelper.deleteItem(info.id);
                 fillData();
                 return true;
+            case ITEM_EDIT_ID:
+            	editItem(info.id);
+            	return true;           	
         }
         return super.onContextItemSelected(item);
     }
@@ -104,6 +116,14 @@ public class ItemsMain extends ListActivity
     private void createItem() {
         Intent i = new Intent(this, ItemEdit.class);
         startActivityForResult(i, ACTIVITY_ITEM_CREATE);
+    }
+    
+    private void editItem(long id)
+    {
+        Intent i = new Intent(this, ItemEdit.class);
+        i.putExtra(DbAdapter.ITEM_ID, id);
+        startActivityForResult(i, ACTIVITY_ITEM_EDIT);
+
     }
     
     private void createList() {
@@ -118,13 +138,28 @@ public class ItemsMain extends ListActivity
     
     @Override
     /*
-     * Called to edit a item
+     * Called when click in a item
      */
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        Intent i = new Intent(this, ItemEdit.class);
-        i.putExtra(DbAdapter.ITEM_ID, id);
-        startActivityForResult(i, ACTIVITY_ITEM_EDIT);
+    protected void onListItemClick(ListView l, View v, int position, long id) 
+    {
+    	super.onListItemClick(l, v, position, id);
+
+    	/*ListView lv = getListView();
+    	l.setOnItemClickListener(new OnItemClickListener() {
+
+    	@Override
+    	public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+    	    //Toast.makeText(MainActivity.this, adapter.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show();           
+    	}*/
+    	/*TextView itemName;
+    	
+    	itemName = (TextView) l.findViewById(R.id.list_name_row);
+
+    	if(itemName == null)
+    		Log.d(TAG, "itemName == NULL!!!");
+    	else
+    		itemName.setBackgroundResource(R.drawable.bg_strikethrough);
+    	//itemName.setText("asdasdasd");//(Html.fromHtml("This is <del>crossed off</del>."));*/
     }
 
     @Override
