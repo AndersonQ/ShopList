@@ -42,18 +42,11 @@ public class ItemEdit extends Activity {
                                     : null;
         }
        
+        //Associate methods to activity buttons
+        createButtons();
+        //Populate fields
         populateFields();
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View view) 
-            {
-            	saveState();
-                setResult(RESULT_OK);
-                finish();
-            }
-
-        });
     }
 
     @Override
@@ -114,5 +107,34 @@ public class ItemEdit extends Activity {
 		{
 			mDbHelper.updateItem(mId, name, quant, purchases);
 		}
+	}
+	
+	/*
+	 * Associate a OnClickListener to each button
+	 */
+	private void createButtons()
+	{
+        Button confirmButton = (Button) findViewById(R.id.confirm);
+        Button cancelButton = (Button) findViewById(R.id.cancel);
+        
+        //Confirm button
+        confirmButton.setOnClickListener(new View.OnClickListener() 
+        {
+            public void onClick(View view) 
+            {
+            	saveState();
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
+        //Cancel button
+        cancelButton.setOnClickListener(new View.OnClickListener() 
+        {
+            public void onClick(View view) 
+            {
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
 	}
 }
