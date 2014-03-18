@@ -102,11 +102,14 @@ public class ListsMain extends ListActivity
             case EDIT_ID:
             	editList(id);
             	return true;
+            case COPY_ID:
+            	copyList(id);
+            	return true;
         }
         return super.onContextItemSelected(item);
     }
 
-    private void createList() {
+	private void createList() {
         Intent i = new Intent(this, ListsEdit.class);
         startActivityForResult(i, ACTIVITY_CREATE);
     }
@@ -150,4 +153,16 @@ public class ListsMain extends ListActivity
         
         startActivityForResult(i, ACTIVITY_EDIT);
     }
+    
+    private void copyList(long id) 
+    {
+        Intent i = new Intent(this, ListsCopy.class);
+        i.putExtra(DbAdapter.LIST_ID, id);
+        
+        int tmp = (int) id;
+        DbAdapter.setCurrentListID(tmp);
+        
+        startActivityForResult(i, ACTIVITY_EDIT);
+		
+	}
 }

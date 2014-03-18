@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
 import android.util.Log;
 
 public class DbAdapter {
@@ -113,12 +114,12 @@ public class DbAdapter {
     /*
      * Methods to deal with Items in a list
      */
-    public long createItem(String itemName, String itemQuant, String purchased) {
+    public long createItem(String itemName, String itemQuant, String purchased, int id) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(ITEM_NAME, itemName);
         initialValues.put(ITEM_QUANTITY, itemQuant);
         initialValues.put(ITEM_PURCHASED, purchased);
-        initialValues.put(ITEM_LIST_ID, getCurrentListID());
+        initialValues.put(ITEM_LIST_ID, id);
         
         Log.v(TAG + " - createItem", "Item: " + itemName + ", listID: " + getCurrentListID());
 
@@ -147,7 +148,6 @@ public class DbAdapter {
             mCursor.moveToFirst();
         }
         return mCursor;
-
     }
 
     public boolean updateItem(long id, String name, String quant, String purchased) {
@@ -176,7 +176,30 @@ public class DbAdapter {
     
     public long copyList(long oldListID, String newListName)
     {
-    	return 0;
+    	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
+    	//Cursor to old list
+    	Cursor oldList = mDb.query(TABLE_NAME, new String[] {ITEM_ID, ITEM_NAME,
+                ITEM_QUANTITY, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) oldListID, null, null, null, null);
+
+    	//Get column index to each column
+    	idxITEM_NAME = oldList.getColumnIndex(ITEM_NAME);
+    	idxITEM_QUANTITY = oldList.getColumnIndex(ITEM_QUANTITY);
+    	idxITEM_PRICE = oldList.getColumnIndex(ITEM_PRICE);
+    	idxITEM_PURCHASED = oldList.getColumnIndex(ITEM_PURCHASED);
+    	
+    	//Create new list
+    	long newListID = createList(newListName);
+    	
+    	//Go to first item
+    	oldList.moveToFirst();
+    	do{
+    		createItem(oldList.getString(idxITEM_NAME), 
+    				oldList.getString(idxITEM_QUANTITY), 
+    				oldList.getString(idxITEM_PURCHASED), 
+    				(int)newListID );
+    	}while (oldList.moveToNext());
+    	
+    	return newListID;
     }
 
     public boolean deleteList(long id) {

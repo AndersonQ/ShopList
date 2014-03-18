@@ -32,8 +32,6 @@ public class ItemEdit extends Activity {
         mQuantText = (EditText) findViewById(R.id.item_quant);
         mPurchasesText = (EditText) findViewById(R.id.item_purchased);
 
-        Button confirmButton = (Button) findViewById(R.id.confirm);
-
         mId = (savedInstanceState == null) ? null :
             (Long) savedInstanceState.getSerializable(DbAdapter.ITEM_ID);
         if (mId == null) {
@@ -98,7 +96,7 @@ public class ItemEdit extends Activity {
 		
 		if (mId == null)
 		{
-			long id = mDbHelper.createItem(name, quant, purchases);
+			long id = mDbHelper.createItem(name, quant, purchases, DbAdapter.getCurrentListID());
 			if(id > 0)
 				mId = id;
 			

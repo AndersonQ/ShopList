@@ -95,6 +95,9 @@ public class ListsEdit extends Activity {
 		}
 	}
 	
+	/*
+	 * Associate a OnClickListener to each button
+	 */
 	private void createButtons()
 	{
         Button confirmButton = (Button) findViewById(R.id.confirm);
