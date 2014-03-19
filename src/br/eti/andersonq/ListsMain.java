@@ -126,11 +126,7 @@ public class ListsMain extends ListActivity implements Update
         startActivityForResult(i, ACTIVITY_EDIT);
         /**/
         
-    	Context context = getApplicationContext();
-    	CharSequence text = "List selected";
-    	int duration = Toast.LENGTH_SHORT;
-    	Toast toast = Toast.makeText(context, text, duration);
-    	toast.show();
+        makeToast("List selected");
     }
 
     @Override
@@ -163,15 +159,14 @@ public class ListsMain extends ListActivity implements Update
     	args.putInt(ListsCopyFrag.OLD_LIST_ID, (int) id);
     	fire.setArguments(args);
     	fire.show(manager, "FRAGMENT");
-    	/*
-        Intent i = new Intent(this, ListsCopy.class);
-        i.putExtra(DbAdapter.LIST_ID, id);
-        
-        int tmp = (int) id;
-        DbAdapter.setCurrentListID(tmp);
-        
-        startActivityForResult(i, ACTIVITY_EDIT);
-        */
-		
 	}
+    
+    private void makeToast(String msg)
+    {
+    	Context context = getApplicationContext();
+    	CharSequence text = msg;
+    	int duration = Toast.LENGTH_SHORT;
+    	Toast toast = Toast.makeText(context, text, duration);
+    	toast.show();
+    }
 }
