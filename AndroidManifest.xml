@@ -26,32 +26,6 @@
             android:label="@string/list_choose"
             android:parentActivityName="br.eti.andersonq.ListsMain" />
         
-        <!-- 
-        <activity
-            android:name="br.eti.andersonq.shoplist.CopyList"
-            android:label="@string/title_activity_copy_list" >
-        </activity>
-        <activity
-            android:name="br.eti.andersonq.ListsCopy"
-            android:label="@string/title_activity_list_copy" >
-        </activity>
-                <activity
-            android:name="br.eti.andersonq.ItemEdit"
-            android:label="@string/app_name"
-            android:parentActivityName="br.eti.andersonq.ItemsMain" />
-        <activity
-            android:name="br.eti.andersonq.ListsEdit"
-            android:label="@string/app_name"
-            android:parentActivityName="br.eti.andersonq.ListsMain" />
-       <activity
-            android:name="br.eti.andersonq.ItemEditFrag"
-            android:label="@string/title_activity_item_edit_frag"
-            android:parentActivityName="DialogFragment" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="DialogFragment" />
-        </activity>
-         -->
     </application>
 
 </manifest>
