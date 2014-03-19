@@ -1,5 +1,7 @@
 package br.eti.andersonq;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -43,8 +45,8 @@ public class DbAdapter {
 	private static final String DB_CREATE_ITEM = "create table " + TABLE_NAME + " (" +
 			ITEM_ID + " integer primary key autoincrement, " +
 			ITEM_NAME + " text not null, " +
-			ITEM_QUANTITY + " text not null, " +
-			ITEM_PURCHASED + " text not null, " +
+			ITEM_QUANTITY + " integer not null, " +
+			ITEM_PURCHASED + " integer not null, " +
 			ITEM_PRICE + " decimal, " +
 			ITEM_LIST_ID + " integer);";
 	
@@ -114,10 +116,11 @@ public class DbAdapter {
     /*
      * Methods to deal with Items in a list
      */
-    public long createItem(String itemName, String itemQuant, String purchased, int id) {
+    public long createItem(String itemName, int itemQuant, float itemPrice, int purchased, int id) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(ITEM_NAME, itemName);
         initialValues.put(ITEM_QUANTITY, itemQuant);
+        initialValues.put(ITEM_PRICE, itemPrice);
         initialValues.put(ITEM_PURCHASED, purchased);
         initialValues.put(ITEM_LIST_ID, id);
         
@@ -134,15 +137,15 @@ public class DbAdapter {
     public Cursor fetchAllItem() {
 
         return mDb.query(TABLE_NAME, new String[] {ITEM_ID, ITEM_NAME,
-                ITEM_QUANTITY, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
+                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
     }
+    
 
     public Cursor fetchItem(long rowId) throws SQLException {
 
         Cursor mCursor =
-
             mDb.query(true, TABLE_NAME, new String[] {ITEM_ID,
-                    ITEM_NAME, ITEM_QUANTITY, ITEM_PURCHASED}, ITEM_ID + "=" + rowId, null,
+                    ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_ID + "=" + rowId, null,
                     null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -150,10 +153,11 @@ public class DbAdapter {
         return mCursor;
     }
 
-    public boolean updateItem(long id, String name, String quant, String purchased) {
+    public boolean updateItem(long id, String name, int quant, float price, int purchased) {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, name);
         args.put(ITEM_QUANTITY, quant);
+        args.put(ITEM_PRICE, price);
         args.put(ITEM_PURCHASED, purchased);
 
         return mDb.update(TABLE_NAME, args, ITEM_ID + "=" + id, null) > 0;
@@ -194,8 +198,9 @@ public class DbAdapter {
     	oldList.moveToFirst();
     	do{
     		createItem(oldList.getString(idxITEM_NAME), 
-    				oldList.getString(idxITEM_QUANTITY), 
-    				oldList.getString(idxITEM_PURCHASED), 
+    				oldList.getInt(idxITEM_QUANTITY), 
+    				oldList.getFloat(idxITEM_PRICE),
+    				oldList.getInt(idxITEM_PURCHASED), 
     				(int)newListID );
     	}while (oldList.moveToNext());
     	
@@ -245,7 +250,7 @@ public class DbAdapter {
 	 * Get name of a list
 	 * @param id of the list to to get the name
 	 * @return
-	 */
+	 *
 	//TODO make it to work!!
 	public String getListName(int id)
 	{
@@ -260,7 +265,7 @@ public class DbAdapter {
 		int idx = mCursor.getColumnIndex(LIST_NAME);
 		String res = mCursor.getString(idx);
 		return res;
-	}
+	}*/
     
 	/*
 	 * End of methods to deal with Shop lists

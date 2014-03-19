@@ -48,10 +48,16 @@ public class ItemsMain extends ListActivity implements Update
         startManagingCursor(itemsCursor);
 
         // Create an array to specify the fields to display in the item list
-        String[] from = new String[]{DbAdapter.ITEM_NAME, DbAdapter.ITEM_QUANTITY, DbAdapter.ITEM_PURCHASED};
+        String[] from = new String[]{DbAdapter.ITEM_NAME, 
+        							DbAdapter.ITEM_QUANTITY, 
+        							DbAdapter.ITEM_PRICE, 
+        							DbAdapter.ITEM_PURCHASED};
 
         // and an array of the fields to bind those fields to
-        int[] to = new int[]{R.id.item_name_row, R.id.item_quant_row, R.id.item_purchased_row};
+        int[] to = new int[]{R.id.item_name_row, 
+        					R.id.item_quant_row, 
+        					R.id.item_pice_row, 
+        					R.id.item_purchased_row};
 
         // Create a simple cursor adapter and set it to display
         SimpleCursorAdapter items = 
