@@ -43,10 +43,24 @@ public class ListsMain extends ListActivity implements Update
         registerForContextMenu(getListView());
     }
 
-    private void fillData() {
+    private void fillData() 
+    {
         // Get all of the rows from the database and create the item list
     	Cursor listCursor = mDbHelper.fetchAllLists();
         startManagingCursor(listCursor);
+        
+        //If there is no list, creates a default one
+        if(listCursor.getCount() == 0)
+        {	long listID;
+        	
+        	makeToast("No lists, creating default list");
+        	listID = mDbHelper.createList("default");
+        	DbAdapter.setCurrentListID((int)listID);
+        	
+        	//Reload rows from database
+        	listCursor = mDbHelper.fetchAllLists();
+            startManagingCursor(listCursor);
+        }
 
         // Create an array to specify the fields we want to display in the list
         String[] from = new String[]{DbAdapter.LIST_NAME, DbAdapter.LIST_TIMESTAMP};
@@ -76,6 +90,9 @@ public class ListsMain extends ListActivity implements Update
         	//Create item
         	editList(-1);
             return true;
+        case android.R.id.home:
+        	startItemMainActivity(DbAdapter.getCurrentListID());
+        	return true;
         }
         return super.onMenuItemSelected(featureId, item);
     }
@@ -113,20 +130,10 @@ public class ListsMain extends ListActivity implements Update
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        
-        /*
-         * Starts ItemMain activity
-         */
-        Intent i = new Intent(this, ItemsMain.class);
-        i.putExtra(DbAdapter.LIST_ID, id);
-        
-        int tmp = (int) id;
-        DbAdapter.setCurrentListID(tmp);
-        
-        startActivityForResult(i, ACTIVITY_EDIT);
-        /**/
-        
+
+        //TODO: show selected list name
         makeToast("List selected");
+        startItemMainActivity(id);
     }
 
     @Override
@@ -161,6 +168,10 @@ public class ListsMain extends ListActivity implements Update
     	fire.show(manager, "FRAGMENT");
 	}
     
+    /**
+     * Displays a Toast message
+     * @param msg message to be displayed
+     */
     private void makeToast(String msg)
     {
     	Context context = getApplicationContext();
@@ -168,5 +179,20 @@ public class ListsMain extends ListActivity implements Update
     	int duration = Toast.LENGTH_SHORT;
     	Toast toast = Toast.makeText(context, text, duration);
     	toast.show();
+    }
+    
+    /**
+     * Start ItemMain activity showing items form a list
+     * @param id of the list to be shown
+     */
+    private void startItemMainActivity(long id)
+    {
+        Intent i = new Intent(this, ItemsMain.class);
+        i.putExtra(DbAdapter.LIST_ID, id);
+        
+        int tmp = (int) id;
+        DbAdapter.setCurrentListID(tmp);
+        
+        startActivityForResult(i, ACTIVITY_EDIT);
     }
 }
