@@ -240,6 +240,27 @@ public class DbAdapter {
 	public static void setCurrentListID(int listID) {
 		currentListID = listID;
 	}
+	
+	/**
+	 * Get name of a list
+	 * @param id of the list to to get the name
+	 * @return
+	 */
+	//TODO make it to work!!
+	public String getListName(int id)
+	{
+		String sql = "select " + LIST_NAME + 
+				" from " + LISTS_TABLE +
+				" where " + LIST_ID + "=" + id;
+		Cursor mCursor = mDb.query(LISTS_TABLE, new String[] {LIST_ID, LIST_NAME}, 
+				LIST_ID + "=" + id, null,
+				null, null, null);
+		mCursor.moveToFirst();
+		
+		int idx = mCursor.getColumnIndex(LIST_NAME);
+		String res = mCursor.getString(idx);
+		return res;
+	}
     
 	/*
 	 * End of methods to deal with Shop lists
