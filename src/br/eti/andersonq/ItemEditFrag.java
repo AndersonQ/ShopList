@@ -1,7 +1,6 @@
 package br.eti.andersonq;
 
 import br.eti.andersonq.shoplist.R;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,13 +11,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.Switch;
-import android.widget.Toast;
 
-@SuppressLint("NewApi")
 public class ItemEditFrag extends DialogFragment {
 	//Tag to debug
     private static final String TAG = "ItemEditFrag";
@@ -28,9 +22,10 @@ public class ItemEditFrag extends DialogFragment {
     private EditText mNameText;
     private EditText mQuantText;
     private EditText mPriceText;
-    private Switch mSwitch;
+    private EditText mPurchasesText;
+    
     private DbAdapter mDbHelper;
-	private int mId;
+	private long mId;
 		
 	private View myInflatedViewl;
 	private Update mUpdate;
@@ -87,6 +82,7 @@ public class ItemEditFrag extends DialogFragment {
     public void onStart() 
     {
         super.onStart();
+        /* it is not working, using POG/KOP (Kludge Oriented Programming)
         //Get arguments
         Bundle args = getArguments();
         if (args != null) 
@@ -94,31 +90,14 @@ public class ItemEditFrag extends DialogFragment {
         	mId = args.getInt(ITEM_ID);
         else
         	//Set -1 so it know that a new item is being created
-        	mId = -1;
+        	mId = -1;*/
+        ////Get arguments - working
+        mId = Omniscient.getCurrentItemID();
         
         mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
         mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
-        mPriceText = (EditText) myInflatedViewl.findViewById(R.id.item_price);
-        mSwitch = (Switch) myInflatedViewl.findViewById(R.id.item_purchased_switch);
-        
-        mSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() 
-        {
-
-        	@Override
-        	public void onCheckedChanged(CompoundButton buttonView,	boolean isChecked) 
-        	{
-	        	/*if (isChecked) 
-	        	{
-		        	Toast.makeText(getActivity().getApplicationContext(), "The switch is ON",
-		        	Toast.LENGTH_SHORT).show();
-	
-	        	} else 
-	        	{
-		        	Toast.makeText(getActivity().getApplicationContext(),
-		        	"The switch is OFF", Toast.LENGTH_SHORT).show();
-	        	}*/
-	        }
-        });
+        mPriceText = (EditText)myInflatedViewl.findViewById(R.id.item_price);
+        mPurchasesText = (EditText) myInflatedViewl.findViewById(R.id.item_purchased);
         
         populateFields();
     }
@@ -134,43 +113,49 @@ public class ItemEditFrag extends DialogFragment {
 		//If it is creating a new item there is no information to populate fields
 		if(mId != -1)
 		{
-			boolean purchased;
 			Cursor note = mDbHelper.fetchItem(mId);
 			getActivity().startManagingCursor(note);
 			
 			//Set activity title
 			getDialog().setTitle(R.string.item_edit);
-			
+						
 			//Fill the fields with item information
 			mNameText.setText(note.getString(
 					note.getColumnIndexOrThrow(DbAdapter.ITEM_NAME)));
-			mQuantText.setText(
-					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY)));
-			mPriceText.setText(
-					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE)));
-			purchased = note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_PURCHASED)) != 0 ?
-					true : false;
-			mSwitch.setChecked(purchased);
+			mQuantText.setText(String.valueOf(
+					note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY))));
+			mPriceText.setText(String.valueOf(
+					note.getFloat(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE))));
+			mPurchasesText.setText(String.valueOf(
+					note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_PURCHASED))));
 		}
 	}
-	
+    /**
+     * Create an item
+     * @param itemName item name
+     * @param itemQuant item quantity
+     * @param price item price
+     * @param purchased purchased if the item was purchased (0-false, 1-true)
+     * @param listId if of the item's list
+     * @return new item ID
+     */
 	private void saveState() 
 	{
 		Log.d(TAG, "Saving State...");
 		String name = mNameText.getText().toString();
 		int quant = Integer.parseInt(mQuantText.getText().toString());
 		float price = Float.parseFloat(mPriceText.getText().toString());
-		int purchased = mSwitch.isChecked() ? 1 : 0;
+		int purchases = Integer.parseInt(mPurchasesText.getText().toString());
 		
 		if (mId == -1)
 		{
-			long id = mDbHelper.createItem(name, quant, price, purchased, DbAdapter.getCurrentListID());
+			long id = mDbHelper.createItem(name, quant, price, purchases, DbAdapter.getCurrentListID());
 			if(id > 0)
 				mId = (int) id;
 		}
 		else
 		{
-			mDbHelper.updateItem(mId, name, quant, price, purchased);
+			mDbHelper.updateItem(mId, name, quant, price, purchases);
 		}
 	}
 }

@@ -18,7 +18,7 @@ public class DbAdapter {
 	/*
 	 * Table Items
 	 */
-	public static final String TABLE_NAME = "SL_Items";
+	public static final String ITEMS_TABLE = "SL_Items";
 	//Primary key
 	public static final String ITEM_ID = "_id";
 	public static final String ITEM_NAME = "name";
@@ -42,7 +42,7 @@ public class DbAdapter {
 	/*
 	 * SQL Create table statements
 	 */
-	private static final String DB_CREATE_ITEM = "create table " + TABLE_NAME + " (" +
+	private static final String DB_CREATE_ITEM = "create table " + ITEMS_TABLE + " (" +
 			ITEM_ID + " integer primary key autoincrement, " +
 			ITEM_NAME + " text not null, " +
 			ITEM_QUANTITY + " integer not null, " +
@@ -94,7 +94,7 @@ public class DbAdapter {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            db.execSQL("DROP TABLE IF EXISTS " + ITEMS_TABLE);
             onCreate(db);
         }
     }
@@ -116,35 +116,83 @@ public class DbAdapter {
     /*
      * Methods to deal with Items in a list
      */
-    public long createItem(String itemName, int itemQuant, float itemPrice, int purchased, int id) {
+    /**
+     * Create an item
+     * @param itemName item name
+     * @param itemQuant item quantity
+     * @param price item price
+     * @param purchased purchased if the item was purchased (0-false, 1-true)
+     * @param listId if of the item's list
+     * @return new item ID
+     */
+    public long createItem(String itemName, int itemQuant, float price, int purchased, int listId) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(ITEM_NAME, itemName);
         initialValues.put(ITEM_QUANTITY, itemQuant);
-        initialValues.put(ITEM_PRICE, itemPrice);
+        initialValues.put(ITEM_PRICE, price);
         initialValues.put(ITEM_PURCHASED, purchased);
-        initialValues.put(ITEM_LIST_ID, id);
+        initialValues.put(ITEM_LIST_ID, listId);
         
         Log.v(TAG + " - createItem", "Item: " + itemName + ", listID: " + getCurrentListID());
 
-        return mDb.insert(TABLE_NAME, null, initialValues);
+        return mDb.insert(ITEMS_TABLE, null, initialValues);
     }
 
     public boolean deleteItem(long rowId) {
 
-        return mDb.delete(TABLE_NAME, ITEM_ID + "=" + rowId, null) > 0;
+        return mDb.delete(ITEMS_TABLE, ITEM_ID + "=" + rowId, null) == 1;
     }
 
     public Cursor fetchAllItem() {
 
-        return mDb.query(TABLE_NAME, new String[] {ITEM_ID, ITEM_NAME,
+        return mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
                 ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
     }
-    
+
+    /**
+     * Get all item of current shop list
+     * @return A array of Item
+     */
+    public ArrayList<Item> getAlltems()
+    {
+    	//Id of each correspondent column 
+    	int idxITEM_ID, idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
+    	//Array to store all items of this list
+    	ArrayList<Item> items = new ArrayList<Item>();
+    	//Cursor to old list
+    	Cursor itemsCursor = mDb.query(ITEMS_TABLE, null, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
+    	//Go to first item, if there isen't a first so there is no items at all
+    	if(itemsCursor.moveToFirst())
+    	{
+	    	//Get column index to each column
+	    	idxITEM_ID = itemsCursor.getColumnIndexOrThrow(ITEM_ID);
+	    	idxITEM_NAME = itemsCursor.getColumnIndex(ITEM_NAME);
+	    	idxITEM_QUANTITY = itemsCursor.getColumnIndex(ITEM_QUANTITY);
+	    	idxITEM_PRICE = itemsCursor.getColumnIndex(ITEM_PRICE);
+	    	idxITEM_PURCHASED = itemsCursor.getColumnIndex(ITEM_PURCHASED);
+	    	idxITEM_LIST_ID = itemsCursor.getColumnIndex(ITEM_LIST_ID);
+    	
+	    	//Store all fetched items on 'items' array
+	    	do{
+	    		int id = itemsCursor.getInt(idxITEM_ID);
+	    		String name = itemsCursor.getString(idxITEM_NAME);
+	    		int quantity = itemsCursor.getInt(idxITEM_QUANTITY);
+	    		float price = itemsCursor.getFloat(idxITEM_PRICE);
+	    		int purchased = itemsCursor.getInt(idxITEM_PURCHASED);
+	    		int listId = itemsCursor.getInt(idxITEM_LIST_ID);
+	    		//Add fetched item in the array
+	    		items.add(new Item(id, listId, name, quantity, price, purchased));
+	    	}while (itemsCursor.moveToNext());
+    	}
+    	
+    	return items;
+    }
 
     public Cursor fetchItem(long rowId) throws SQLException {
 
         Cursor mCursor =
-            mDb.query(true, TABLE_NAME, new String[] {ITEM_ID,
+
+            mDb.query(true, ITEMS_TABLE, new String[] {ITEM_ID,
                     ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_ID + "=" + rowId, null,
                     null, null, null, null);
         if (mCursor != null) {
@@ -152,7 +200,53 @@ public class DbAdapter {
         }
         return mCursor;
     }
+    
+    /**
+     * Get a item by its ID
+     * @param id item's id
+     * @return an object Item
+     */
+    public Item getItem(long id)
+    {
+    	//Id of each correspondent column 
+    	int /*idxITEM_ID,*/ idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
+    	//Array to store all items of this list
+    	Item item = null;
+    	//Cursor to old list
+    	Cursor itemsCursor = mDb.query(true, ITEMS_TABLE, new String[] {ITEM_ID,
+                ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED, ITEM_LIST_ID}, ITEM_ID + "=" + id, null,
+                null, null, null, null);
+    	//Go to first item, if there isen't a first so there is no items at all
+    	if(itemsCursor.moveToFirst())
+    	{
+	    	//Get column index to each column
+	    	idxITEM_NAME = itemsCursor.getColumnIndex(ITEM_NAME);
+	    	idxITEM_QUANTITY = itemsCursor.getColumnIndex(ITEM_QUANTITY);
+	    	idxITEM_PRICE = itemsCursor.getColumnIndex(ITEM_PRICE);
+	    	idxITEM_PURCHASED = itemsCursor.getColumnIndex(ITEM_PURCHASED);
+	    	idxITEM_LIST_ID = itemsCursor.getColumnIndex(ITEM_LIST_ID);
+    	
+    		String name = itemsCursor.getString(idxITEM_NAME);
+    		int quantity = itemsCursor.getInt(idxITEM_QUANTITY);
+    		float price = itemsCursor.getFloat(idxITEM_PRICE);
+    		int purchased = itemsCursor.getInt(idxITEM_PURCHASED);
+    		int listId = itemsCursor.getInt(idxITEM_LIST_ID);
+    		//Add fetched item in the array
+	    	item =  new Item(id, listId, name, quantity, price, purchased);
+    	}
+    	
+    	return item;
+    }
 
+    /**
+     * Update informations of a item
+     * @param id item ID
+     * @param name item Name
+     * @param quant item quantity
+     * @param price item price
+     * @param purchased if the item was purchased (0-false, 1-true)
+     * @return true success, false fail
+     */
     public boolean updateItem(long id, String name, int quant, float price, int purchased) {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, name);
@@ -160,7 +254,7 @@ public class DbAdapter {
         args.put(ITEM_PRICE, price);
         args.put(ITEM_PURCHASED, purchased);
 
-        return mDb.update(TABLE_NAME, args, ITEM_ID + "=" + id, null) > 0;
+        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + id, null) == 1;
     }
     /*
      * End of methods to deal with Items in a list
@@ -169,6 +263,11 @@ public class DbAdapter {
     
     /*
      * Methods to deal with Shop lists
+     */
+    /**
+     * Create a new list
+     * @param listName name of new list
+     * @return
      */
     public long createList(String listName) {
 		ContentValues initVals = new ContentValues();
@@ -182,8 +281,8 @@ public class DbAdapter {
     {
     	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
     	//Cursor to old list
-    	Cursor oldList = mDb.query(TABLE_NAME, new String[] {ITEM_ID, ITEM_NAME,
-                ITEM_QUANTITY, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) oldListID, null, null, null, null);
+    	Cursor oldList = mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
+                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) oldListID, null, null, null, null);
 
     	//Get column index to each column
     	idxITEM_NAME = oldList.getColumnIndex(ITEM_NAME);
@@ -198,7 +297,7 @@ public class DbAdapter {
     	oldList.moveToFirst();
     	do{
     		createItem(oldList.getString(idxITEM_NAME), 
-    				oldList.getInt(idxITEM_QUANTITY), 
+    				oldList.getInt(idxITEM_QUANTITY),
     				oldList.getFloat(idxITEM_PRICE),
     				oldList.getInt(idxITEM_PURCHASED), 
     				(int)newListID );
@@ -207,9 +306,12 @@ public class DbAdapter {
     	return newListID;
     }
 
-    public boolean deleteList(long id) {
-
-    	return mDb.delete(LISTS_TABLE, LIST_ID + "=" + id, null) > 0;
+    public boolean deleteList(long id) 
+    {
+    	boolean listRet = mDb.delete(LISTS_TABLE, LIST_ID + "=" + id, null) == 1;
+    	mDb.delete(ITEMS_TABLE, ITEM_LIST_ID + "=" + id, null);
+    	
+    	return listRet;
     }
 
     public Cursor fetchAllLists() {
@@ -245,27 +347,6 @@ public class DbAdapter {
 	public static void setCurrentListID(int listID) {
 		currentListID = listID;
 	}
-	
-	/**
-	 * Get name of a list
-	 * @param id of the list to to get the name
-	 * @return
-	 *
-	//TODO make it to work!!
-	public String getListName(int id)
-	{
-		String sql = "select " + LIST_NAME + 
-				" from " + LISTS_TABLE +
-				" where " + LIST_ID + "=" + id;
-		Cursor mCursor = mDb.query(LISTS_TABLE, new String[] {LIST_ID, LIST_NAME}, 
-				LIST_ID + "=" + id, null,
-				null, null, null);
-		mCursor.moveToFirst();
-		
-		int idx = mCursor.getColumnIndex(LIST_NAME);
-		String res = mCursor.getString(idx);
-		return res;
-	}*/
     
 	/*
 	 * End of methods to deal with Shop lists
