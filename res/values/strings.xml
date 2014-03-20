@@ -35,6 +35,7 @@
     <string name="no_items">No Items Yet</string>
     <string name="item_quant_text">Quantity: </string>
     <string name="item_purchased_text">Purchased: </string>
+    <string name="item_price_text">Price:</string>
 
     <!-- Add/Edit -->
     <string name="item_edit">Edit item</string>
@@ -42,7 +43,7 @@
     <string name="item_name">Name: </string>
     <string name="item_quant">Quantity</string>
     <string name="item_edit_hint">Item name</string>
-        <string name="item_price">Price</string>
+    <string name="item_price">Price</string>
     <string name="item_price_hint">Item price</string>
 
     <!-- Menu TODO: replace with action bar -->
