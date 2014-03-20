@@ -61,10 +61,12 @@
     <!-- End Items Strings -->
 
 
-    <!-- Buttons -->
+    <!-- Geral -->
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
-    <!-- End Buttons -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <!-- End Geral -->
 
     <string name="action_search">action_search</string>
     <string name="action_settings">action_settings</string>

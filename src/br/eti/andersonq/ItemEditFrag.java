@@ -25,7 +25,7 @@ public class ItemEditFrag extends DialogFragment {
     private EditText mPurchasesText;
     
     private DbAdapter mDbHelper;
-	private int mId;
+	private long mId;
 		
 	private View myInflatedViewl;
 	private Update mUpdate;
@@ -82,6 +82,7 @@ public class ItemEditFrag extends DialogFragment {
     public void onStart() 
     {
         super.onStart();
+        /* it is not working, using POG/KOP (Kludge Oriented Programming)
         //Get arguments
         Bundle args = getArguments();
         if (args != null) 
@@ -89,7 +90,9 @@ public class ItemEditFrag extends DialogFragment {
         	mId = args.getInt(ITEM_ID);
         else
         	//Set -1 so it know that a new item is being created
-        	mId = -1;
+        	mId = -1;*/
+        ////Get arguments - working
+        mId = Omniscient.getCurrentItemID();
         
         mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
         mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
@@ -115,16 +118,16 @@ public class ItemEditFrag extends DialogFragment {
 			
 			//Set activity title
 			getDialog().setTitle(R.string.item_edit);
-			
+						
 			//Fill the fields with item information
 			mNameText.setText(note.getString(
 					note.getColumnIndexOrThrow(DbAdapter.ITEM_NAME)));
-			mQuantText.setText(
-					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY)));
-			mPriceText.setText(
-					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE)));
-			mPurchasesText.setText(
-					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_PURCHASED)));
+			mQuantText.setText(String.valueOf(
+					note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY))));
+			mPriceText.setText(String.valueOf(
+					note.getFloat(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE))));
+			mPurchasesText.setText(String.valueOf(
+					note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_PURCHASED))));
 		}
 	}
     /**

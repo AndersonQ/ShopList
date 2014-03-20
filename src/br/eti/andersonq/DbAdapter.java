@@ -1,5 +1,7 @@
 package br.eti.andersonq;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -147,6 +149,45 @@ public class DbAdapter {
                 ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
     }
 
+    /**
+     * Get all item of current shop list
+     * @return A array of Item
+     */
+    public ArrayList<Item> getAlltems()
+    {
+    	//Id of each correspondent column 
+    	int idxITEM_ID, idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
+    	//Array to store all items of this list
+    	ArrayList<Item> items = new ArrayList<Item>();
+    	//Cursor to old list
+    	Cursor itemsCursor = mDb.query(ITEMS_TABLE, null, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
+    	//Go to first item, if there isen't a first so there is no items at all
+    	if(itemsCursor.moveToFirst())
+    	{
+	    	//Get column index to each column
+	    	idxITEM_ID = itemsCursor.getColumnIndexOrThrow(ITEM_ID);
+	    	idxITEM_NAME = itemsCursor.getColumnIndex(ITEM_NAME);
+	    	idxITEM_QUANTITY = itemsCursor.getColumnIndex(ITEM_QUANTITY);
+	    	idxITEM_PRICE = itemsCursor.getColumnIndex(ITEM_PRICE);
+	    	idxITEM_PURCHASED = itemsCursor.getColumnIndex(ITEM_PURCHASED);
+	    	idxITEM_LIST_ID = itemsCursor.getColumnIndex(ITEM_LIST_ID);
+    	
+	    	//Store all fetched items on 'items' array
+	    	do{
+	    		int id = itemsCursor.getInt(idxITEM_ID);
+	    		String name = itemsCursor.getString(idxITEM_NAME);
+	    		int quantity = itemsCursor.getInt(idxITEM_QUANTITY);
+	    		float price = itemsCursor.getFloat(idxITEM_PRICE);
+	    		int purchased = itemsCursor.getInt(idxITEM_PURCHASED);
+	    		int listId = itemsCursor.getInt(idxITEM_LIST_ID);
+	    		//Add fetched item in the array
+	    		items.add(new Item(id, listId, name, quantity, price, purchased));
+	    	}while (itemsCursor.moveToNext());
+    	}
+    	
+    	return items;
+    }
+
     public Cursor fetchItem(long rowId) throws SQLException {
 
         Cursor mCursor =
@@ -158,6 +199,43 @@ public class DbAdapter {
             mCursor.moveToFirst();
         }
         return mCursor;
+    }
+    
+    /**
+     * Get a item by its ID
+     * @param id item's id
+     * @return an object Item
+     */
+    public Item getItem(long id)
+    {
+    	//Id of each correspondent column 
+    	int /*idxITEM_ID,*/ idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
+    	//Array to store all items of this list
+    	Item item = null;
+    	//Cursor to old list
+    	Cursor itemsCursor = mDb.query(true, ITEMS_TABLE, new String[] {ITEM_ID,
+                ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED, ITEM_LIST_ID}, ITEM_ID + "=" + id, null,
+                null, null, null, null);
+    	//Go to first item, if there isen't a first so there is no items at all
+    	if(itemsCursor.moveToFirst())
+    	{
+	    	//Get column index to each column
+	    	idxITEM_NAME = itemsCursor.getColumnIndex(ITEM_NAME);
+	    	idxITEM_QUANTITY = itemsCursor.getColumnIndex(ITEM_QUANTITY);
+	    	idxITEM_PRICE = itemsCursor.getColumnIndex(ITEM_PRICE);
+	    	idxITEM_PURCHASED = itemsCursor.getColumnIndex(ITEM_PURCHASED);
+	    	idxITEM_LIST_ID = itemsCursor.getColumnIndex(ITEM_LIST_ID);
+    	
+    		String name = itemsCursor.getString(idxITEM_NAME);
+    		int quantity = itemsCursor.getInt(idxITEM_QUANTITY);
+    		float price = itemsCursor.getFloat(idxITEM_PRICE);
+    		int purchased = itemsCursor.getInt(idxITEM_PURCHASED);
+    		int listId = itemsCursor.getInt(idxITEM_LIST_ID);
+    		//Add fetched item in the array
+	    	item =  new Item(id, listId, name, quantity, price, purchased);
+    	}
+    	
+    	return item;
     }
 
     /**

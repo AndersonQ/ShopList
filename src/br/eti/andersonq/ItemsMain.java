@@ -1,6 +1,7 @@
 package br.eti.andersonq;
 
 import br.eti.andersonq.shoplist.R;
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -16,7 +17,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class ItemsMain extends ListActivity implements Update
+public class ItemsMain extends Activity implements Update
 {
 	//Tag to debug
     private static final String TAG = "ItemsMain";
@@ -38,11 +39,21 @@ public class ItemsMain extends ListActivity implements Update
         setContentView(R.layout.items_list);
         mDbHelper = new DbAdapter(this);
         mDbHelper.open();
-        fillData();
-        registerForContextMenu(getListView());
+        //fillData();
+        ListView listView = (ListView) findViewById(R.id.items_list_view);
+        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, mDbHelper.getAlltems());
+		listView.setAdapter(adapter);
+		listView.setClickable(true);
+        registerForContextMenu(listView);
     }
 
-    private void fillData() {
+    private void fillData() 
+    {
+        ListView listView = (ListView) findViewById(R.id.items_list_view);
+        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, mDbHelper.getAlltems());
+		listView.setAdapter(adapter);
+		listView.setClickable(true);
+    	/*
         // Get all of the rows from the database and create the item list
     	Cursor itemsCursor = mDbHelper.fetchAllItem();
         startManagingCursor(itemsCursor);
@@ -56,7 +67,7 @@ public class ItemsMain extends ListActivity implements Update
         // Create a simple cursor adapter and set it to display
         SimpleCursorAdapter items = 
             new SimpleCursorAdapter(this, R.layout.items_row, itemsCursor, from, to);
-        setListAdapter(items);
+        setListAdapter(items);*/
     }
 
     @Override
@@ -124,9 +135,11 @@ public class ItemsMain extends ListActivity implements Update
     {
     	ItemEditFrag fire = new ItemEditFrag();
     	FragmentManager manager = getFragmentManager();
+    	/* it is not working, using POG/KOP (Kludge Oriented Programming)
     	Bundle args = new Bundle();
     	args.putInt(ItemEditFrag.ITEM_ID, (int) id);
-    	fire.setArguments(args);
+    	fire.setArguments(args);*/
+    	Omniscient.setCurrentItemID(id);
     	fire.show(manager, "FRAGMENT");
     }
 
@@ -135,13 +148,13 @@ public class ItemsMain extends ListActivity implements Update
         startActivityForResult(i, ACTIVITY_LIST_MAIN);
     }
     
-    @Override
+ //   @Override
     /*
      * Called when click in a item
      */
-    protected void onListItemClick(ListView l, View v, int position, long id) 
-    {
-    	super.onListItemClick(l, v, position, id);
+    //protected void onListItemClick(ListView l, View v, int position, long id) 
+   // {
+    	//super.onListItemClick(l, v, position, id);
 
     	/*ListView lv = getListView();
     	l.setOnItemClickListener(new OnItemClickListener() {
@@ -159,7 +172,7 @@ public class ItemsMain extends ListActivity implements Update
     	else
     		itemName.setBackgroundResource(R.drawable.bg_strikethrough);
     	//itemName.setText("asdasdasd");//(Html.fromHtml("This is <del>crossed off</del>."));*/
-    }
+   // }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) 
