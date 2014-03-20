@@ -21,7 +21,9 @@ public class ItemEditFrag extends DialogFragment {
 	
     private EditText mNameText;
     private EditText mQuantText;
+    private EditText mPriceText;
     private EditText mPurchasesText;
+    
     private DbAdapter mDbHelper;
 	private int mId;
 		
@@ -91,6 +93,7 @@ public class ItemEditFrag extends DialogFragment {
         
         mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
         mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
+        mPriceText = (EditText)myInflatedViewl.findViewById(R.id.item_price);
         mPurchasesText = (EditText) myInflatedViewl.findViewById(R.id.item_purchased);
         
         populateFields();
@@ -118,27 +121,38 @@ public class ItemEditFrag extends DialogFragment {
 					note.getColumnIndexOrThrow(DbAdapter.ITEM_NAME)));
 			mQuantText.setText(
 					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY)));
+			mPriceText.setText(
+					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE)));
 			mPurchasesText.setText(
 					note.getString(note.getColumnIndexOrThrow(DbAdapter.ITEM_PURCHASED)));
 		}
 	}
-	
+    /**
+     * Create an item
+     * @param itemName item name
+     * @param itemQuant item quantity
+     * @param price item price
+     * @param purchased purchased if the item was purchased (0-false, 1-true)
+     * @param listId if of the item's list
+     * @return new item ID
+     */
 	private void saveState() 
 	{
 		Log.d(TAG, "Saving State...");
 		String name = mNameText.getText().toString();
-		String quant = mQuantText.getText().toString();
-		String purchases = mPurchasesText.getText().toString();
+		int quant = Integer.parseInt(mQuantText.getText().toString());
+		float price = Float.parseFloat(mPriceText.getText().toString());
+		int purchases = Integer.parseInt(mPurchasesText.getText().toString());
 		
 		if (mId == -1)
 		{
-			long id = mDbHelper.createItem(name, quant, purchases, DbAdapter.getCurrentListID());
+			long id = mDbHelper.createItem(name, quant, price, purchases, DbAdapter.getCurrentListID());
 			if(id > 0)
 				mId = (int) id;
 		}
 		else
 		{
-			mDbHelper.updateItem(mId, name, quant, purchases);
+			mDbHelper.updateItem(mId, name, quant, price, purchases);
 		}
 	}
 }

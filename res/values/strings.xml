@@ -42,6 +42,8 @@
     <string name="item_name">Name: </string>
     <string name="item_quant">Quantity</string>
     <string name="item_edit_hint">Item name</string>
+        <string name="item_price">Price</string>
+    <string name="item_price_hint">Item price</string>
 
     <!-- Menu TODO: replace with action bar -->
     <string name="menu_item_insert">Add Item</string>
@@ -50,7 +52,7 @@
 
     <!-- Default values -->
     <string name="item_default_quant">1</string>
-    <string name="item_default_purchased">No</string>
+    <string name="item_default_purchased">0</string>
 
     <!-- Action Bar -->
     <string name="item_action_add">New Item</string>
@@ -66,7 +68,6 @@
     <string name="action_search">action_search</string>
     <string name="action_settings">action_settings</string>
     <string name="title_activity_copy_list">Copy List</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_list_copy">List Copy</string>
     <string name="title_activity_item_edit_frag">Edit Item</string>
 
