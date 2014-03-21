@@ -60,7 +60,7 @@ public class DbAdapter {
 	//End of database definition
 	
 	//Keep track of the current shoplist being used
-	private static int currentListID = 0;
+	private static int currentListID = 1;
     
 	//Tag to debug
     private static final String TAG = "DbAdapter";
@@ -394,6 +394,15 @@ public class DbAdapter {
         args.put(LIST_NAME, listName);
 
         return mDb.update(LISTS_TABLE, args, LIST_ID + "=" + id, null) > 0;
+    }
+    
+    public static String getListName(long id)
+    {
+    	Cursor cursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
+				LIST_NAME}, LIST_ID + "=" + id, null,
+				null, null, null, null);
+    	    	
+    	return cursor.moveToFirst() == true ? cursor.getString(cursor.getColumnIndex(LIST_NAME)) : null;
     }
     
 	public static int getCurrentListID() {
