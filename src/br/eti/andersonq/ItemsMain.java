@@ -33,7 +33,6 @@ public class ItemsMain extends Activity implements Update
     private static final int ITEM_EDIT_ID = Menu.FIRST + 1;
 
     //private DbAdapter mDbHelper;
-
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +40,7 @@ public class ItemsMain extends Activity implements Update
         setContentView(R.layout.items_list);
         //mDbHelper = new DbAdapter(this);
         DbAdapter.open(this);
+        getActionBar().setSubtitle(DbAdapter.getListName(DbAdapter.getCurrentListID()));
         //fillData();
         ListView listView = (ListView) findViewById(R.id.items_list_view);
         MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
