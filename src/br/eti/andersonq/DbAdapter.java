@@ -117,9 +117,11 @@ public class DbAdapter {
         mDb = mDbHelper.getWritableDatabase();
     }
 
-    public static void close() {
+    public static void close() 
+    {
         mDbHelper.close();
     }
+
 
     /*
      * ************************************************************************
@@ -145,8 +147,6 @@ public class DbAdapter {
         initialValues.put(ITEM_PURCHASED, purchased);
         initialValues.put(ITEM_LIST_ID, listId);
         
-        Log.v(TAG + " - createItem", "Item: " + itemName + ", listID: " + getCurrentListID());
-
         return mDb.insert(ITEMS_TABLE, null, initialValues);
     }
 
@@ -291,7 +291,7 @@ public class DbAdapter {
     /**
      * Update informations of a item
      * @param item object Item
-     * @return
+     * @return true if one row was updated, false otherwise
      */
     public static boolean updateItem(Item item)
     {

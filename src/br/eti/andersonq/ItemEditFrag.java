@@ -160,7 +160,6 @@ public class ItemEditFrag extends DialogFragment {
      */
 	private void saveState() 
 	{
-		Log.d(TAG, "Saving State...");
 		String name = mNameText.getText().toString();
 		int quant = Integer.parseInt(mQuantText.getText().toString());
 		
@@ -172,12 +171,15 @@ public class ItemEditFrag extends DialogFragment {
 		}
 		else//Editing Item
 		{
+			//Get item
 			Item item = DbAdapter.getItem(mId);
+			//Set new price
 			item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
-			Log.d(TAG, "Before urchased: " + item.getPurchasedBool());
-			DbAdapter.updateItem(item);
+			//Save on DB
+			boolean ret = DbAdapter.updateItem(item);
+			if(!ret) //If there was a problem, log it
+				Log.e(TAG, "saveState(): Error: item wasn't saved in DB");
 			item = DbAdapter.getItem(mId);
-			Log.d(TAG, "Before urchased: " + item.getPurchasedBool());
 			//DbAdapter.updateItem(mId, name, quant, price);
 		}
 	}

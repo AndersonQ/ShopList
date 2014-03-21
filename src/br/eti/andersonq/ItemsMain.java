@@ -7,12 +7,14 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -120,36 +122,12 @@ public class ItemsMain extends Activity implements Update
         return super.onContextItemSelected(item);
     }
     
-
-    /*
-	@Override
-	protected void onResume() 
-	{
-		DbAdapter.open();
-		fillData();
-		super.onResume();
-	}
-    
-    @Override
-    protected void onPause()
-    {
-    	DbAdapter.close();
-    	super.onPause();
-    }
-
-	@Override
-	protected void onStop() 
-	{
-		DbAdapter.close();
-		super.onStop();
-	}
-
 	@Override
 	protected void onDestroy() 
 	{
 		DbAdapter.close();
 		super.onDestroy();
-	}*/
+	}
     
 	@Override
 	public void onSaveState() 
@@ -178,32 +156,6 @@ public class ItemsMain extends Activity implements Update
         Intent i = new Intent(this, ListsMain.class);
         startActivityForResult(i, ACTIVITY_LIST_MAIN);
     }
-    
- //   @Override
-    /*
-     * Called when click in a item
-     */
-    //protected void onListItemClick(ListView l, View v, int position, long id) 
-   // {
-    	//super.onListItemClick(l, v, position, id);
-
-    	/*ListView lv = getListView();
-    	l.setOnItemClickListener(new OnItemClickListener() {
-
-    	@Override
-    	public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
-    	    //Toast.makeText(MainActivity.this, adapter.getItemAtPosition(position).toString(), Toast.LENGTH_SHORT).show();           
-    	}*/
-    	/*TextView itemName;
-    	
-    	itemName = (TextView) l.findViewById(R.id.list_name_row);
-
-    	if(itemName == null)
-    		Log.d(TAG, "itemName == NULL!!!");
-    	else
-    		itemName.setBackgroundResource(R.drawable.bg_strikethrough);
-    	//itemName.setText("asdasdasd");//(Html.fromHtml("This is <del>crossed off</del>."));*/
-   // }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) 

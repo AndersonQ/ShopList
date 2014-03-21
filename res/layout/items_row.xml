@@ -1,11 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?><LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:paddingBottom="@dimen/activity_vertical_margin"
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
-    >
+	android:clickable="true"
+	android:longClickable="true"
+	android:state_activated="true"
+	android:background="?android:attr/activatedBackgroundIndicator"
+	 >
 
 	<TextView android:id="@+id/item_name_row"
 	    android:layout_width="wrap_content"
@@ -29,18 +34,25 @@
 	<TextView android:id="@+id/item_price_row"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"/>
-	
+
 	<TextView android:id="@+id/item_purchased_text_row"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:text="@string/item_purchased_text"
 	    android:layout_gravity="left"/>
+	<CheckBox android:id="@+id/item_purchased_checkbox_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+	<!-- 
+        android:onClick="onCheckboxClicked"/> -->
+	<!--  
 	<Switch
 		android:id="@+id/item_purchased_switch_row"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:textOn="@string/yes"
 		android:textOff="@string/no"/>
+		-->
 	<!-- 
 	<TextView android:id="@+id/item_purchased_row"
 	    android:layout_width="wrap_content"
