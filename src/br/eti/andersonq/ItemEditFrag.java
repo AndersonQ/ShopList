@@ -22,9 +22,9 @@ public class ItemEditFrag extends DialogFragment {
     private EditText mNameText;
     private EditText mQuantText;
     private EditText mPriceText;
-    private EditText mPurchasesText;
+    //private EditText mPurchasesText;
     
-    private DbAdapter mDbHelper;
+    //private DbAdapter mDbHelper;
 	private long mId;
 		
 	private View myInflatedViewl;
@@ -38,13 +38,27 @@ public class ItemEditFrag extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         
-        //Get layout view
-        myInflatedViewl = inflater.inflate(R.layout.item_edit_frag, null);
-        //Set layout view
-        builder.setView(myInflatedViewl);
+        mId = Omniscient.getCurrentItemID();
+        if(mId == -1)//Create Item
+        {
+	        //Inflate layout
+	        myInflatedViewl = inflater.inflate(R.layout.items_create_frag, null);
+	        //Set layout view
+	        builder.setView(myInflatedViewl);
+	        //Set title to Create Item or Edit Item
+	        builder.setMessage(R.string.item_create);
+        }
+        else //Edit Item
+        {
+	        //Inflate layout
+	        myInflatedViewl = inflater.inflate(R.layout.item_edit_frag, null);
+	        //Set layout view
+	        builder.setView(myInflatedViewl);
+	        //Set title to Create Item or Edit Item
+	        builder.setMessage(R.string.item_edit);
+        }
         
-        builder.setMessage(R.string.item_create)
-               .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                    	saveState();
                    	mUpdate.onSaveState();
@@ -72,10 +86,11 @@ public class ItemEditFrag extends DialogFragment {
 	        throw new ClassCastException(activity.toString() + " must implement Update");
 	    }
 		
+		/*
 		//Create DbAdapter to deal with database
         mDbHelper = new DbAdapter(activity);
         //Open database
-        mDbHelper.open();
+        mDbHelper.open();*/
 	}
 
 	@Override
@@ -92,12 +107,18 @@ public class ItemEditFrag extends DialogFragment {
         	//Set -1 so it know that a new item is being created
         	mId = -1;*/
         ////Get arguments - working
-        mId = Omniscient.getCurrentItemID();
         
-        mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
-        mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
-        mPriceText = (EditText)myInflatedViewl.findViewById(R.id.item_price);
-        mPurchasesText = (EditText) myInflatedViewl.findViewById(R.id.item_purchased);
+        if(mId == -1)//Create Item
+        {
+	        mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
+	        mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
+        }
+        else//Edit Item
+        {
+	        mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
+	        mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
+	        mPriceText = (EditText) myInflatedViewl.findViewById(R.id.item_price);
+        }
         
         populateFields();
     }
@@ -113,7 +134,7 @@ public class ItemEditFrag extends DialogFragment {
 		//If it is creating a new item there is no information to populate fields
 		if(mId != -1)
 		{
-			Cursor note = mDbHelper.fetchItem(mId);
+			Cursor note = DbAdapter.fetchItem(mId);
 			getActivity().startManagingCursor(note);
 			
 			//Set activity title
@@ -126,8 +147,6 @@ public class ItemEditFrag extends DialogFragment {
 					note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY))));
 			mPriceText.setText(String.valueOf(
 					note.getFloat(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE))));
-			mPurchasesText.setText(String.valueOf(
-					note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_PURCHASED))));
 		}
 	}
     /**
@@ -144,18 +163,22 @@ public class ItemEditFrag extends DialogFragment {
 		Log.d(TAG, "Saving State...");
 		String name = mNameText.getText().toString();
 		int quant = Integer.parseInt(mQuantText.getText().toString());
-		float price = Float.parseFloat(mPriceText.getText().toString());
-		int purchases = Integer.parseInt(mPurchasesText.getText().toString());
 		
-		if (mId == -1)
+		if (mId == -1)//Creating Item
 		{
-			long id = mDbHelper.createItem(name, quant, price, purchases, DbAdapter.getCurrentListID());
+			long id = DbAdapter.createItem(name, quant, 0, 0, DbAdapter.getCurrentListID());
 			if(id > 0)
 				mId = (int) id;
 		}
-		else
+		else//Editing Item
 		{
-			mDbHelper.updateItem(mId, name, quant, price, purchases);
+			Item item = DbAdapter.getItem(mId);
+			item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
+			Log.d(TAG, "Before urchased: " + item.getPurchasedBool());
+			DbAdapter.updateItem(item);
+			item = DbAdapter.getItem(mId);
+			Log.d(TAG, "Before urchased: " + item.getPurchasedBool());
+			//DbAdapter.updateItem(mId, name, quant, price);
 		}
 	}
 }
