@@ -65,9 +65,9 @@ public class DbAdapter {
 	//Tag to debug
     private static final String TAG = "DbAdapter";
     
-    private DatabaseHelper mDbHelper;
-    private SQLiteDatabase mDb;
-    private final Context mCtx;
+    private static DatabaseHelper mDbHelper;
+    private static SQLiteDatabase mDb;
+    private static Context mCtx;
 
     private static class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -99,22 +99,34 @@ public class DbAdapter {
         }
     }
 
-    public DbAdapter(Context ctx) {
-        this.mCtx = ctx;
+    public DbAdapter(Context ctx) 
+    {
+        //DbAdapter.mCtx = ctx;
     }
 
-    public DbAdapter open() throws SQLException {
+    public static void open(Context ctx) throws SQLException 
+    {
+    	DbAdapter.mCtx = ctx;
         mDbHelper = new DatabaseHelper(mCtx);
         mDb = mDbHelper.getWritableDatabase();
-        return this;
+    }
+    
+    public static void open() throws SQLException 
+    {
+        mDbHelper = new DatabaseHelper(mCtx);
+        mDb = mDbHelper.getWritableDatabase();
     }
 
-    public void close() {
+    public static void close() {
         mDbHelper.close();
     }
 
     /*
+     * ************************************************************************
+     * ************************************************************************
      * Methods to deal with Items in a list
+     * ************************************************************************
+     * ************************************************************************
      */
     /**
      * Create an item
@@ -125,7 +137,7 @@ public class DbAdapter {
      * @param listId if of the item's list
      * @return new item ID
      */
-    public long createItem(String itemName, int itemQuant, float price, int purchased, int listId) {
+    public static long createItem(String itemName, int itemQuant, float price, int purchased, int listId) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(ITEM_NAME, itemName);
         initialValues.put(ITEM_QUANTITY, itemQuant);
@@ -138,12 +150,12 @@ public class DbAdapter {
         return mDb.insert(ITEMS_TABLE, null, initialValues);
     }
 
-    public boolean deleteItem(long rowId) {
+    public static boolean deleteItem(long rowId) {
 
         return mDb.delete(ITEMS_TABLE, ITEM_ID + "=" + rowId, null) == 1;
     }
 
-    public Cursor fetchAllItem() {
+    public static Cursor fetchAllItem() {
 
         return mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
                 ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
@@ -153,7 +165,7 @@ public class DbAdapter {
      * Get all item of current shop list
      * @return A array of Item
      */
-    public ArrayList<Item> getAlltems()
+    public static ArrayList<Item> getAlltems()
     {
     	//Id of each correspondent column 
     	int idxITEM_ID, idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
@@ -188,7 +200,7 @@ public class DbAdapter {
     	return items;
     }
 
-    public Cursor fetchItem(long rowId) throws SQLException {
+    public static Cursor fetchItem(long rowId) throws SQLException {
 
         Cursor mCursor =
 
@@ -206,7 +218,7 @@ public class DbAdapter {
      * @param id item's id
      * @return an object Item
      */
-    public Item getItem(long id)
+    public static Item getItem(long id)
     {
     	//Id of each correspondent column 
     	int /*idxITEM_ID,*/ idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
@@ -247,7 +259,7 @@ public class DbAdapter {
      * @param purchased if the item was purchased (0-false, 1-true)
      * @return true success, false fail
      */
-    public boolean updateItem(long id, String name, int quant, float price, int purchased) {
+    public static boolean updateItem(long id, String name, int quant, float price, int purchased) {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, name);
         args.put(ITEM_QUANTITY, quant);
@@ -256,28 +268,72 @@ public class DbAdapter {
 
         return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + id, null) == 1;
     }
+    
+    /**
+     * 
+     * Update informations of a item
+     * @param id item ID
+     * @param name item Name
+     * @param quant item quantity
+     * @param price item price
+     * @return true success, false fail
+     */
+    public static boolean updateItem(long id, String name, int quant, float price) 
+    {
+        ContentValues args = new ContentValues();
+        args.put(ITEM_NAME, name);
+        args.put(ITEM_QUANTITY, quant);
+        args.put(ITEM_PRICE, price);
+
+        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + id, null) == 1;
+    }
+    
+    /**
+     * Update informations of a item
+     * @param item object Item
+     * @return
+     */
+    public static boolean updateItem(Item item)
+    {
+        ContentValues args = new ContentValues();
+        args.put(ITEM_NAME, item.getName());
+        args.put(ITEM_QUANTITY, item.getQuantity());
+        args.put(ITEM_PRICE, item.getPrice());
+        args.put(ITEM_PURCHASED, item.getPurchased());
+
+        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + item.getId(), null) == 1;
+    }
     /*
+     * ************************************************************************
+     * ************************************************************************
      * End of methods to deal with Items in a list
+     * ************************************************************************
+     * ************************************************************************
+
      */
     
     
     /*
+     * ************************************************************************
+     * ************************************************************************
      * Methods to deal with Shop lists
+     * ************************************************************************
+     * ************************************************************************
      */
     /**
      * Create a new list
      * @param listName name of new list
      * @return
      */
-    public long createList(String listName) {
+    public static long createList(String listName) {
 		ContentValues initVals = new ContentValues();
 		
-		initVals.put(this.LIST_NAME, listName);
+		initVals.put(LIST_NAME, listName);
 		
-		return mDb.insert(this.LISTS_TABLE, null, initVals);
+		return mDb.insert(LISTS_TABLE, null, initVals);
     }
     
-    public long copyList(long oldListID, String newListName)
+    public static long copyList(long oldListID, String newListName)
     {
     	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
     	//Cursor to old list
@@ -306,7 +362,7 @@ public class DbAdapter {
     	return newListID;
     }
 
-    public boolean deleteList(long id) 
+    public static boolean deleteList(long id) 
     {
     	boolean listRet = mDb.delete(LISTS_TABLE, LIST_ID + "=" + id, null) == 1;
     	mDb.delete(ITEMS_TABLE, ITEM_LIST_ID + "=" + id, null);
@@ -314,14 +370,14 @@ public class DbAdapter {
     	return listRet;
     }
 
-    public Cursor fetchAllLists() {
+    public static Cursor fetchAllLists() {
 
 		return mDb.query(LISTS_TABLE, 
 				new String [] {LIST_ID, LIST_NAME, LIST_TIMESTAMP},
 				null, null, null, null, null);
     }
 
-    public Cursor fetchList(long id) throws SQLException {
+    public static Cursor fetchList(long id) throws SQLException {
 
         Cursor mCursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
             				LIST_NAME, LIST_TIMESTAMP}, LIST_ID + "=" + id, null,
@@ -333,7 +389,7 @@ public class DbAdapter {
         return mCursor;
     }
 
-    public boolean updateList(long id, String listName) {
+    public static boolean updateList(long id, String listName) {
         ContentValues args = new ContentValues();
         args.put(LIST_NAME, listName);
 
@@ -349,6 +405,10 @@ public class DbAdapter {
 	}
     
 	/*
+     * ************************************************************************
+     * ************************************************************************
 	 * End of methods to deal with Shop lists
+     * ************************************************************************
+     * ************************************************************************
 	 */
 }
