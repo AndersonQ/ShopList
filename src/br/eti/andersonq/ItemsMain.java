@@ -19,61 +19,40 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
+/**
+ * @author	Anderson de Franca Queiroz
+ * @email	contato@andersonq.eti.br
+ */
 public class ItemsMain extends Activity implements Update
 {
 	//Tag to debug
     private static final String TAG = "ItemsMain";
 	
-	private static final int ACTIVITY_ITEM_CREATE = 0;
-    private static final int ACTIVITY_ITEM_EDIT = 1;
-    private static final int ACTIVITY_LIST_CREATE = 3;
     private static final int ACTIVITY_LIST_MAIN = 4;
 
     private static final int ITEM_DELETE_ID = Menu.FIRST;
     private static final int ITEM_EDIT_ID = Menu.FIRST + 1;
-
-    //private DbAdapter mDbHelper;
 	
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) 
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.items_list);
         //mDbHelper = new DbAdapter(this);
         DbAdapter.open(this);
         getActionBar().setSubtitle(DbAdapter.getListName(DbAdapter.getCurrentListID()));
-        //fillData();
+
         ListView listView = (ListView) findViewById(R.id.items_list_view);
         MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
 		listView.setAdapter(adapter);
 		listView.setClickable(true);
+		
         registerForContextMenu(listView);
     }
 
-    private void fillData() 
-    {
-        ListView listView = (ListView) findViewById(R.id.items_list_view);
-        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
-		listView.setAdapter(adapter);
-		listView.setClickable(true);
-    	/*
-        // Get all of the rows from the database and create the item list
-    	Cursor itemsCursor = mDbHelper.fetchAllItem();
-        startManagingCursor(itemsCursor);
-
-        // Create an array to specify the fields to display in the item list
-        String[] from = new String[]{DbAdapter.ITEM_NAME, DbAdapter.ITEM_QUANTITY, DbAdapter.ITEM_PRICE, DbAdapter.ITEM_PURCHASED};
-
-        // and an array of the fields to bind those fields to
-        int[] to = new int[]{R.id.item_name_row, R.id.item_quant_row, R.id.item_price_row, R.id.item_purchased_row};
-
-        // Create a simple cursor adapter and set it to display
-        SimpleCursorAdapter items = 
-            new SimpleCursorAdapter(this, R.layout.items_row, itemsCursor, from, to);
-        setListAdapter(items);*/
-    }
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) 
+    {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.item_action_bar, menu);
@@ -82,7 +61,8 @@ public class ItemsMain extends Activity implements Update
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    public boolean onMenuItemSelected(int featureId, MenuItem item) 
+    {
         switch(item.getItemId()) 
         {
         	case R.id.item_action_add:
@@ -98,7 +78,8 @@ public class ItemsMain extends Activity implements Update
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
-            ContextMenuInfo menuInfo) {
+            ContextMenuInfo menuInfo) 
+    {
         super.onCreateContextMenu(menu, v, menuInfo);
         menu.add(0, ITEM_DELETE_ID, 0, R.string.menu_item_delete);
         menu.add(0, ITEM_EDIT_ID, 0, R.string.menu_item_edit);
@@ -122,6 +103,13 @@ public class ItemsMain extends Activity implements Update
         return super.onContextItemSelected(item);
     }
     
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) 
+    {
+        super.onActivityResult(requestCode, resultCode, intent);
+        fillData();
+    }
+    
 	@Override
 	protected void onDestroy() 
 	{
@@ -134,20 +122,28 @@ public class ItemsMain extends Activity implements Update
 	{
 		fillData();
 	}
+	
+	/**
+	 * Fill the activity with the current list items
+	 */
+    private void fillData() 
+    {
+        ListView listView = (ListView) findViewById(R.id.items_list_view);
+        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
+		listView.setAdapter(adapter);
+		listView.setClickable(true);
+    }
     
-    /*
+    /**
      * Call Fragment to create or edit a item
      * If id == -1 it will create a item, otherwise will edit the item with
      * the specified id
+     * @param id -1 to create a item or the of of the item to be edited
      */
     private void editItem(long id)
     {
     	ItemEditFrag fire = new ItemEditFrag();
     	FragmentManager manager = getFragmentManager();
-    	/* it is not working, using POG/KOP (Kludge Oriented Programming)
-    	Bundle args = new Bundle();
-    	args.putInt(ItemEditFrag.ITEM_ID, (int) id);
-    	fire.setArguments(args);*/
     	Omniscient.setCurrentItemID(id);
     	fire.show(manager, "FRAGMENT");
     }
@@ -156,11 +152,5 @@ public class ItemsMain extends Activity implements Update
         Intent i = new Intent(this, ListsMain.class);
         startActivityForResult(i, ACTIVITY_LIST_MAIN);
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) 
-    {
-        super.onActivityResult(requestCode, resultCode, intent);
-        fillData();
-    }
+    
 }
