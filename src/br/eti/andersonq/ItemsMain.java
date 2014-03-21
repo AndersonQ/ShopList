@@ -30,18 +30,18 @@ public class ItemsMain extends Activity implements Update
     private static final int ITEM_DELETE_ID = Menu.FIRST;
     private static final int ITEM_EDIT_ID = Menu.FIRST + 1;
 
-    private DbAdapter mDbHelper;
+    //private DbAdapter mDbHelper;
 
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.items_list);
-        mDbHelper = new DbAdapter(this);
-        mDbHelper.open();
+        //mDbHelper = new DbAdapter(this);
+        DbAdapter.open(this);
         //fillData();
         ListView listView = (ListView) findViewById(R.id.items_list_view);
-        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, mDbHelper.getAlltems());
+        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
 		listView.setAdapter(adapter);
 		listView.setClickable(true);
         registerForContextMenu(listView);
@@ -50,7 +50,7 @@ public class ItemsMain extends Activity implements Update
     private void fillData() 
     {
         ListView listView = (ListView) findViewById(R.id.items_list_view);
-        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, mDbHelper.getAlltems());
+        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
 		listView.setAdapter(adapter);
 		listView.setClickable(true);
     	/*
@@ -110,7 +110,7 @@ public class ItemsMain extends Activity implements Update
         switch(item.getItemId()) 
         {
             case ITEM_DELETE_ID:
-                mDbHelper.deleteItem(info.id);
+            	DbAdapter.deleteItem(info.id);
                 fillData();
                 return true;
             case ITEM_EDIT_ID:
@@ -119,6 +119,37 @@ public class ItemsMain extends Activity implements Update
         }
         return super.onContextItemSelected(item);
     }
+    
+
+    /*
+	@Override
+	protected void onResume() 
+	{
+		DbAdapter.open();
+		fillData();
+		super.onResume();
+	}
+    
+    @Override
+    protected void onPause()
+    {
+    	DbAdapter.close();
+    	super.onPause();
+    }
+
+	@Override
+	protected void onStop() 
+	{
+		DbAdapter.close();
+		super.onStop();
+	}
+
+	@Override
+	protected void onDestroy() 
+	{
+		DbAdapter.close();
+		super.onDestroy();
+	}*/
     
 	@Override
 	public void onSaveState() 

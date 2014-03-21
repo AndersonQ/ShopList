@@ -19,7 +19,7 @@ public class ListsEditFrag extends DialogFragment {
 	final static String LIST_ID = "lists_id";
 	
     private EditText mNameText;
-    private DbAdapter mDbHelper;
+    //private DbAdapter mDbHelper;
 	private int mId;
 		
 	private View myInflatedViewl;
@@ -67,10 +67,11 @@ public class ListsEditFrag extends DialogFragment {
 	        throw new ClassCastException(activity.toString() + " must implement Update");
 	    }
 		
+		/*
 		//Create DbAdapter to deal with database
         mDbHelper = new DbAdapter(activity);
         //Open database
-        mDbHelper.open();
+        mDbHelper.open();*/
 	}
 
 	@Override
@@ -102,7 +103,7 @@ public class ListsEditFrag extends DialogFragment {
 		//If it is creating a new item there is no information to populate fields
 		if(mId != -1)
 		{
-			Cursor note = mDbHelper.fetchList(mId);
+			Cursor note = DbAdapter.fetchList(mId);
 			getActivity().startManagingCursor(note);
 			
 			//Set activity title
@@ -120,13 +121,13 @@ public class ListsEditFrag extends DialogFragment {
 		
 		if (mId == -1)
 		{
-			long id = mDbHelper.createList(listName);
+			long id = DbAdapter.createList(listName);
 			if(id > 0)
 				mId = (int) id;
 		}
 		else
 		{
-			mDbHelper.updateList(mId, listName);
+			DbAdapter.updateList(mId, listName);
 		}
 	}
 

@@ -18,7 +18,7 @@ public class ListsCopyFrag extends DialogFragment {
 	final static String OLD_LIST_ID = "old_list_id";
 	
     private EditText mNewListName;
-    private DbAdapter mDbHelper;
+    //private DbAdapter mDbHelper;
 	private int mOldListID;
 		
 	private View myInflatedViewl;
@@ -40,7 +40,7 @@ public class ListsCopyFrag extends DialogFragment {
         builder.setMessage(R.string.list_copy)
                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                	mDbHelper.copyList(mOldListID, mNewListName.getText().toString());
+                	DbAdapter.copyList(mOldListID, mNewListName.getText().toString());
                    	mUpdate.onSaveState();
                    }
                })
@@ -66,10 +66,11 @@ public class ListsCopyFrag extends DialogFragment {
 	        throw new ClassCastException(activity.toString() + " must implement Update");
 	    }
 		
+		/*
 		//Create DbAdapter to deal with database
         mDbHelper = new DbAdapter(activity);
         //Open database
-        mDbHelper.open();
+        mDbHelper.open();*/
 	}
 
 	@Override

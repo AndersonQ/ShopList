@@ -31,14 +31,15 @@ public class ListsMain extends ListActivity implements Update
     private static final int EDIT_ID 	= Menu.FIRST + 2;
     private static final int COPY_ID 	= Menu.FIRST + 3;
 
-    private DbAdapter mDbHelper;
+    //private DbAdapter mDbHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lists_list);
+        /*
         mDbHelper = new DbAdapter(this);
-        mDbHelper.open();
+        mDbHelper.open();*/
         fillData();
         registerForContextMenu(getListView());
     }
@@ -46,7 +47,7 @@ public class ListsMain extends ListActivity implements Update
     private void fillData() 
     {
         // Get all of the rows from the database and create the item list
-    	Cursor listCursor = mDbHelper.fetchAllLists();
+    	Cursor listCursor = DbAdapter.fetchAllLists();
         startManagingCursor(listCursor);
         
         //If there is no list, creates a default one
@@ -54,11 +55,11 @@ public class ListsMain extends ListActivity implements Update
         {	long listID;
         	
         	makeToast("No lists, creating default list");
-        	listID = mDbHelper.createList("default");
+        	listID = DbAdapter.createList("default");
         	DbAdapter.setCurrentListID((int)listID);
         	
         	//Reload rows from database
-        	listCursor = mDbHelper.fetchAllLists();
+        	listCursor = DbAdapter.fetchAllLists();
             startManagingCursor(listCursor);
         }
 
@@ -114,7 +115,7 @@ public class ListsMain extends ListActivity implements Update
         switch(item.getItemId()) 
         {
             case DELETE_ID:
-                mDbHelper.deleteList(id);
+            	DbAdapter.deleteList(id);
                 fillData();
                 return true;
             case EDIT_ID:
@@ -141,7 +142,37 @@ public class ListsMain extends ListActivity implements Update
         super.onActivityResult(requestCode, resultCode, intent);
         fillData();
     }
+
+    /*
+	@Override
+	protected void onResume() 
+	{
+		DbAdapter.open();
+		fillData();
+		super.onResume();
+	}
     
+    @Override
+    protected void onPause()
+    {
+    	DbAdapter.close();
+    	super.onPause();
+    }
+
+	@Override
+	protected void onStop() 
+	{
+		DbAdapter.close();
+		super.onStop();
+	}
+
+	@Override
+	protected void onDestroy() 
+	{
+		DbAdapter.close();
+		super.onDestroy();
+	}*/
+
 	@Override
 	public void onSaveState() 
 	{
