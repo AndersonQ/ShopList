@@ -42,7 +42,7 @@ public class ListsEditFrag extends DialogFragment {
                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                    	saveState();
-                   	mUpdate.onSaveState();
+                   	mUpdate.updateDisplayedData();
                    }
                })
                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

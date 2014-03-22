@@ -41,7 +41,7 @@ public class ListsCopyFrag extends DialogFragment {
                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                 	DbAdapter.copyList(mOldListID, mNewListName.getText().toString());
-                   	mUpdate.onSaveState();
+                   	mUpdate.updateDisplayedData();
                    }
                })
                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
