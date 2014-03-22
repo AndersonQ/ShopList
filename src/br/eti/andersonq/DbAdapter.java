@@ -518,7 +518,7 @@ public class DbAdapter
      * @param shopListId of the shop list
      * @return receipt list id
      */
-    public long createReceiptList(long shopListId)
+    public static long createReceiptList(long shopListId)
     {
     	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
     	String shopListName = getListName(shopListId);
@@ -554,6 +554,15 @@ public class DbAdapter
     	return reciptListID;
     }
 
+    /**
+     * Create receipt list from current shop list
+     * @return receipt list id
+     */
+    public static long createReceiptList()
+    {
+    	return createReceiptList(currentShopListID);
+    }
+    
     /**
      * Delete a list
      * @param id of the list to be deleted
