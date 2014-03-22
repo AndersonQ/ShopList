@@ -19,7 +19,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class ListsMain extends ListActivity implements Update
+public class ListsMain extends ListActivity //implements Update
 {
 	//Tag to debug
 	private static final String TAG = "ListsMain";
@@ -133,7 +133,7 @@ public class ListsMain extends ListActivity implements Update
         super.onListItemClick(l, v, position, id);
 
         //TODO: show selected list name
-        makeToast("List selected");
+        makeToast("List " + id + " selected");
         startItemMainActivity(id);
     }
 
@@ -173,11 +173,13 @@ public class ListsMain extends ListActivity implements Update
 		super.onDestroy();
 	}*/
 
+    /*
 	@Override
-	public void onSaveState() 
+	public void updateDisplayedData() 
 	{
 		fillData();
 	}
+	*/
 	
     private void editList(long id)
     {
