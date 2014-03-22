@@ -146,8 +146,9 @@ public class ItemsMain extends Activity implements Update
      */
 	
 	@Override
-	public void onSaveState() 
+	public void updateDisplayedData() 
 	{
+		updateCost();
 		fillData();
 	}
 	
@@ -156,10 +157,7 @@ public class ItemsMain extends Activity implements Update
 	 */
     private void fillData() 
     {
-    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
-    	price.setText(String.format("%.2f",listCost()));
-    	//ListView
-        ListView listView = (ListView) findViewById(R.id.items_list_view);
+    	ListView listView = (ListView) findViewById(R.id.items_list_view);
         MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
 		listView.setAdapter(adapter);
 		listView.setClickable(true);
@@ -197,9 +195,16 @@ public class ItemsMain extends Activity implements Update
     	
     	for(Item item : items)
     	{
-    		totalCost += item.getQuantity() * item.getPrice();
+    		totalCost += item.getQuantity() * item.getPrice() * item.getPurchased();
     	}
 
     	return totalCost;
+    }
+    
+    @Override
+    public void updateCost()
+    {
+    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	price.setText(String.format("%.2f",listCost()));
     }
 }

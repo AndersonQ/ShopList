@@ -34,8 +34,9 @@ public class MyAdapter extends ArrayAdapter<Item>
     private static final String TAG = "MyAdapter";
 
 	private ArrayList<Item> items;
-	Context mContext;
-	View mView;
+	private Context mContext;
+	private View mView;
+
 	
 	LayoutInflater viewinf;
 	
@@ -117,7 +118,9 @@ public class MyAdapter extends ArrayAdapter<Item>
        		   		boolean ret = DbAdapter.updateItem(item);
        		   		if(!ret)//If there was a problem, log it
        		   			Log.e(TAG, "CheckBox: item wasn't updated on DB! Name " + item.getName() + " Id " +item.getId());
-           		   	}
+       		   	}
+				//Update total cost
+				((ItemsMain) mContext).updateCost();
 	        }
         });
         /*
