@@ -165,7 +165,7 @@ public class ItemEditFrag extends DialogFragment {
 		
 		if (mId == -1)//Creating Item
 		{
-			long id = DbAdapter.createItem(name, quant, 0, 0, DbAdapter.getCurrentListID());
+			long id = DbAdapter.createShopItem(name, quant, 0, 0, DbAdapter.getCurrentShopListID());
 			if(id > 0)
 				mId = (int) id;
 		}
@@ -176,7 +176,7 @@ public class ItemEditFrag extends DialogFragment {
 			//Set new price
 			item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
 			//Save on DB
-			boolean ret = DbAdapter.updateItem(item);
+			boolean ret = DbAdapter.updateShopItem(item);
 			if(!ret) //If there was a problem, log it
 				Log.e(TAG, "saveState(): Error: item wasn't saved in DB");
 			item = DbAdapter.getItem(mId);

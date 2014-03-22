@@ -56,7 +56,7 @@ public class ListsMain extends ListActivity //implements Update
         	
         	makeToast("No lists, creating default list");
         	listID = DbAdapter.createList("default");
-        	DbAdapter.setCurrentListID((int)listID);
+        	DbAdapter.setCurrentShopListID((int)listID);
         	
         	//Reload rows from database
         	listCursor = DbAdapter.fetchAllLists();
@@ -92,7 +92,7 @@ public class ListsMain extends ListActivity //implements Update
         	editList(-1);
             return true;
         case android.R.id.home:
-        	startItemMainActivity(DbAdapter.getCurrentListID());
+        	startItemMainActivity(DbAdapter.getCurrentShopListID());
         	return true;
         }
         return super.onMenuItemSelected(featureId, item);
@@ -224,7 +224,7 @@ public class ListsMain extends ListActivity //implements Update
         i.putExtra(DbAdapter.LIST_ID, id);
         
         int tmp = (int) id;
-        DbAdapter.setCurrentListID(tmp);
+        DbAdapter.setCurrentShopListID(tmp);
         
         startActivityForResult(i, ACTIVITY_EDIT);
     }

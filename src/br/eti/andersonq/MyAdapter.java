@@ -115,7 +115,7 @@ public class MyAdapter extends ArrayAdapter<Item>
        		   	if(item.getPurchasedBool() != isChecked)
        		   	{
        		   		item.setPurchased(isChecked == true ? 1 : 0);
-       		   		boolean ret = DbAdapter.updateItem(item);
+       		   		boolean ret = DbAdapter.updateShopItem(item);
        		   		if(!ret)//If there was a problem, log it
        		   			Log.e(TAG, "CheckBox: item wasn't updated on DB! Name " + item.getName() + " Id " +item.getId());
        		   	}

@@ -1,3 +1,19 @@
+/**
+ * DbAdapter.java is part of ShopList.
+ *
+ * ShopList is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * ShopList is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with ShopList.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package br.eti.andersonq;
 
 import java.util.ArrayList;
@@ -11,12 +27,24 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 
-public class DbAdapter {
+/**
+ * 
+ * @author	Anderson de Franca Queiroz
+ * @email	contato@andersonq.eti.br
+ */
+public class DbAdapter 
+{
+	//Tag to debug
+    private static final String TAG = "DbAdapter";
 
-	//Database name
+	/*
+	 * Database name
+	 */
 	private static final String DATABASE_NAME = "ShopList";
+	
 	/*
 	 * Table Items
+	 * Store all items from shop lists
 	 */
 	public static final String ITEMS_TABLE = "SL_Items";
 	//Primary key
@@ -27,22 +55,58 @@ public class DbAdapter {
 	public static final String ITEM_PURCHASED = "purchased";
 	//Foreign key to table 'ShopLists'
 	public static final String ITEM_LIST_ID = "listID";
-	public static final int ITEM_DB_VERSON = 1;
+	
+	/*
+	 * Table Receipt Items
+	 * Store all items from receipt lists
+	 */
+	public static final String RECEIPT_ITEMS_TABLE = "SL_Receipt_Items";
+	//Primary key
+	public static final String RECEIPT_ITEM_ID = "_id";
+	public static final String RECEIPT_ITEM_NAME = "name";
+	public static final String RECEIPT_ITEM_QUANTITY = "quantitly";
+	public static final String RECEIPT_ITEM_PRICE = "price";
+	public static final String RECEIPT_ITEM_PURCHASED = "purchased";
+	//Foreign key to table 'ShopLists'
+	public static final String RECEIPT_LIST_ID = "receipt_listID";
 	
 	/*
 	 * Table ShopLists
+	 * A shop list is a list of item to be bought,
+	 * there is no need to neither price of flag 'purchased'
 	 */
 	public static final String LISTS_TABLE = "SL_Lists";
 	//Primary key
 	public static final String LIST_ID = "_id";
 	public static final String LIST_NAME = "name";
 	public static final String LIST_TIMESTAMP = "time_stamp";
-	public static final int LIST_DB_VERSON = 1;
+	
+	/*
+	 * Table Receipt
+	 * A shop list used meanwhile buying stuff, so it keeps
+	 * price and flag 'purchased'
+	 * When 'start shopping' a 'shop list' is copied to become
+	 * a 'receipt'
+	 */
+	public static final String RECEIPT_TABLE = "SL_Receipts";
+	//Primary key
+	public static final String RECEIPT_ID = "_id";
+	public static final String RECEIPT_NAME = "name";
+	public static final String RECEIPT_TIMESTAMP = "time_stamp";
+	
+	/*
+	 * Table Configuration
+	 * Store all configurations, its schema is
+	 * config (option name) | value (0/1 false/true)
+	 */
+	public static final String CONFIG_TABLE = "SL_config";
+	public static final String CONFIG_OPTION = "option";
+	public static final String CONFIG_VALUE = "value";
 	
 	/*
 	 * SQL Create table statements
 	 */
-	private static final String DB_CREATE_ITEM = "create table " + ITEMS_TABLE + " (" +
+	private static final String DB_CREATE_ITEM_TABLE = "create table " + ITEMS_TABLE + " (" +
 			ITEM_ID + " integer primary key autoincrement, " +
 			ITEM_NAME + " text not null, " +
 			ITEM_QUANTITY + " integer not null, " +
@@ -50,20 +114,34 @@ public class DbAdapter {
 			ITEM_PRICE + " decimal, " +
 			ITEM_LIST_ID + " integer);";
 	
-	public static final String DB_CREATE_SHOPLIST = "create table " + LISTS_TABLE + " (" +
+	private static final String DB_CREATE_RECEIPT_ITEMS_TABLE = "create table " + ITEMS_TABLE + " (" +
+			RECEIPT_ITEM_ID + " integer primary key autoincrement, " +
+			RECEIPT_ITEM_NAME + " text not null, " +
+			RECEIPT_ITEM_QUANTITY + " integer not null, " +
+			RECEIPT_ITEM_PURCHASED + " integer not null, " +
+			RECEIPT_ITEM_PRICE + " decimal, " +
+			RECEIPT_LIST_ID + " integer);";
+	
+	public static final String DB_CREATE_SHOPLIST_TABLE = "create table " + LISTS_TABLE + " (" +
 			LIST_ID + " integer primary key autoincrement, " +
 			LIST_NAME + " text not null, " + 
 			LIST_TIMESTAMP + " timestamp not null default current_timestamp);";
 	
-	private static final int DATABASE_VERSION = 2;
+	public static final String DB_CREATE_RECEIPT_TABLE = "create table " + RECEIPT_TABLE + " (" +
+			RECEIPT_ID + " integer primary key autoincrement, " +
+			RECEIPT_NAME + " text not null, " + 
+			RECEIPT_TIMESTAMP + " timestamp not null default current_timestamp);";
+	
+	public static final String DB_CREATE_CONFIG_TABLE = "create table " + CONFIG_TABLE + " (" +
+			CONFIG_OPTION + "text primary key, " + 
+			CONFIG_VALUE + " integer not null);";
+	
+	private static final int DATABASE_VERSION = 1;
 	
 	//End of database definition
 	
-	//Keep track of the current shoplist being used
-	private static int currentListID = 1;
-    
-	//Tag to debug
-    private static final String TAG = "DbAdapter";
+	//Keep track of the current shop list being used
+	private static int currentShopListID = 1;
     
     private static DatabaseHelper mDbHelper;
     private static SQLiteDatabase mDb;
@@ -76,18 +154,34 @@ public class DbAdapter {
         }
 
         @Override
-        public void onCreate(SQLiteDatabase db) {
-
+        public void onCreate(SQLiteDatabase db)
+        {
+        	String[] options = new String [] {"shopping", "autoremoval"};
+        	int[] values = {0, 0};
         	//Create tables
-            db.execSQL(DB_CREATE_ITEM);
-            db.execSQL(DB_CREATE_SHOPLIST);
+            db.execSQL(DB_CREATE_ITEM_TABLE);
+            db.execSQL(DB_CREATE_RECEIPT_ITEMS_TABLE);
+            db.execSQL(DB_CREATE_SHOPLIST_TABLE);
+            db.execSQL(DB_CREATE_RECEIPT_TABLE);
+            db.execSQL(DB_CREATE_CONFIG_TABLE);
             
             //Insert default list on database
             db.execSQL("insert into " + 
             		LISTS_TABLE + 
             		"(" + LIST_NAME + ")" +
             		"values ('default');");
-            setCurrentListID(1);
+            
+            //Insert configurations on database
+            for(int i = 0; i < options.length; i++)
+            	db.execSQL("insert into " + 
+            		CONFIG_TABLE + "(" + 
+            		CONFIG_OPTION + ", " +
+            		CONFIG_VALUE + ")" +
+            		"values ('" + 
+            		options[i] + "', '" +
+            		values[i] + "');");
+
+            setCurrentShopListID(1);
         }
 
         @Override
@@ -130,8 +224,9 @@ public class DbAdapter {
      * ************************************************************************
      * ************************************************************************
      */
+    
     /**
-     * Create an item
+     * Create a shop item
      * @param itemName item name
      * @param itemQuant item quantity
      * @param price item price
@@ -139,7 +234,7 @@ public class DbAdapter {
      * @param listId if of the item's list
      * @return new item ID
      */
-    public static long createItem(String itemName, int itemQuant, float price, int purchased, int listId) {
+    public static long createShopItem(String itemName, int itemQuant, float price, int purchased, int listId) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(ITEM_NAME, itemName);
         initialValues.put(ITEM_QUANTITY, itemQuant);
@@ -148,6 +243,45 @@ public class DbAdapter {
         initialValues.put(ITEM_LIST_ID, listId);
         
         return mDb.insert(ITEMS_TABLE, null, initialValues);
+    }
+    
+    /**
+     * Create a receipt item
+     * @param item an Item object
+     * @return the receipt item id
+     */
+    public static long createReceiptItem(Item item)
+    {
+        ContentValues args = new ContentValues();
+        args.put(RECEIPT_ITEM_NAME, item.getName());
+        args.put(RECEIPT_ITEM_QUANTITY, item.getQuantity());
+        args.put(RECEIPT_ITEM_PRICE, item.getPrice());
+        args.put(RECEIPT_ITEM_PURCHASED, item.getPurchased());
+        args.put(RECEIPT_LIST_ID, item.getId());
+        
+    	return mDb.insert(RECEIPT_ITEMS_TABLE, null, args);
+    }
+    
+    /**
+     * 
+     * Create a receipt item
+     * @param itemName item name
+     * @param itemQuant item quantity
+     * @param price item price
+     * @param purchased purchased if the item was purchased (0-false, 1-true)
+     * @param receiptListId if of the item's list
+     * @return new item ID
+     */
+    public static long createReceiptItem(String itemName, int itemQuant, float price, int purchased, long receiptListId) 
+    {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(RECEIPT_ITEM_NAME, itemName);
+        initialValues.put(RECEIPT_ITEM_QUANTITY, itemQuant);
+        initialValues.put(RECEIPT_ITEM_PRICE, price);
+        initialValues.put(RECEIPT_ITEM_PURCHASED, purchased);
+        initialValues.put(RECEIPT_LIST_ID, (int) receiptListId);
+        
+        return mDb.insert(RECEIPT_ITEMS_TABLE, null, initialValues);
     }
 
     public static boolean deleteItem(long rowId) {
@@ -158,7 +292,7 @@ public class DbAdapter {
     public static Cursor fetchAllItem() {
 
         return mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
-                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
+                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentShopListID(), null, null, null, null);
     }
 
     /**
@@ -172,7 +306,7 @@ public class DbAdapter {
     	//Array to store all items of this list
     	ArrayList<Item> items = new ArrayList<Item>();
     	//Cursor to old list
-    	Cursor itemsCursor = mDb.query(ITEMS_TABLE, null, ITEM_LIST_ID + "=" + getCurrentListID(), null, null, null, null);
+    	Cursor itemsCursor = mDb.query(ITEMS_TABLE, null, ITEM_LIST_ID + "=" + getCurrentShopListID(), null, null, null, null);
     	//Go to first item, if there isen't a first so there is no items at all
     	if(itemsCursor.moveToFirst())
     	{
@@ -251,7 +385,7 @@ public class DbAdapter {
     }
 
     /**
-     * Update informations of a item
+     * Update informations of a shop item
      * @param id item ID
      * @param name item Name
      * @param quant item quantity
@@ -259,7 +393,7 @@ public class DbAdapter {
      * @param purchased if the item was purchased (0-false, 1-true)
      * @return true success, false fail
      */
-    public static boolean updateItem(long id, String name, int quant, float price, int purchased) {
+    public static boolean updateShopItem(long id, String name, int quant, float price, int purchased) {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, name);
         args.put(ITEM_QUANTITY, quant);
@@ -271,14 +405,14 @@ public class DbAdapter {
     
     /**
      * 
-     * Update informations of a item
+     * Update informations of a shop item
      * @param id item ID
      * @param name item Name
      * @param quant item quantity
      * @param price item price
      * @return true success, false fail
      */
-    public static boolean updateItem(long id, String name, int quant, float price) 
+    public static boolean updateShopItem(long id, String name, int quant, float price) 
     {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, name);
@@ -289,11 +423,11 @@ public class DbAdapter {
     }
     
     /**
-     * Update informations of a item
+     * Update informations of a shop item
      * @param item object Item
      * @return true if one row was updated, false otherwise
      */
-    public static boolean updateItem(Item item)
+    public static boolean updateShopItem(Item item)
     {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, item.getName());
@@ -303,6 +437,23 @@ public class DbAdapter {
 
         return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + item.getId(), null) == 1;
     }
+    
+    /**
+     * Update informations of a receipt item
+     * @param item object Item
+     * @return true if one row was updated, false otherwise
+     */
+    public static boolean updateReceiptItem(Item item)
+    {
+        ContentValues args = new ContentValues();
+        args.put(RECEIPT_ITEM_NAME, item.getName());
+        args.put(RECEIPT_ITEM_QUANTITY, item.getQuantity());
+        args.put(RECEIPT_ITEM_PRICE, item.getPrice());
+        args.put(RECEIPT_ITEM_PURCHASED, item.getPurchased());
+
+        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + item.getId(), null) == 1;
+    }
+    
     /*
      * ************************************************************************
      * ************************************************************************
@@ -352,7 +503,7 @@ public class DbAdapter {
     	//Go to first item
     	oldList.moveToFirst();
     	do{
-    		createItem(oldList.getString(idxITEM_NAME), 
+    		createShopItem(oldList.getString(idxITEM_NAME), 
     				oldList.getInt(idxITEM_QUANTITY),
     				oldList.getFloat(idxITEM_PRICE),
     				oldList.getInt(idxITEM_PURCHASED), 
@@ -361,7 +512,53 @@ public class DbAdapter {
     	
     	return newListID;
     }
+    
+    /**
+     * Create a receipt list from a shop list
+     * @param shopListId of the shop list
+     * @return receipt list id
+     */
+    public long createReceiptList(long shopListId)
+    {
+    	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
+    	String shopListName = getListName(shopListId);
+		ContentValues value = new ContentValues();
+		
+		//Create new receipt list with the same name as shop list
+		value.put(RECEIPT_NAME, shopListName);
+		long reciptListID =  mDb.insert(LISTS_TABLE, null, value);
+		
+		if(reciptListID != -1)//Receipt list was successfully created
+		{
+	    	//Cursor to shop list
+	    	Cursor shopList = mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
+	                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) shopListId, null, null, null, null);
+	
+	    	//Get column index to each column
+	    	idxITEM_NAME = shopList.getColumnIndex(ITEM_NAME);
+	    	idxITEM_QUANTITY = shopList.getColumnIndex(ITEM_QUANTITY);
+	    	idxITEM_PRICE = shopList.getColumnIndex(ITEM_PRICE);
+	    	idxITEM_PURCHASED = shopList.getColumnIndex(ITEM_PURCHASED);
+	    	    	
+	    	//Go to first shop item
+	    	shopList.moveToFirst();
+	    	do{//create receipt items
+	    		createReceiptItem(shopList.getString(idxITEM_NAME), 
+	    				shopList.getInt(idxITEM_QUANTITY),
+	    				shopList.getFloat(idxITEM_PRICE),
+	    				shopList.getInt(idxITEM_PURCHASED), 
+	    				shopListId );
+	    	}while (shopList.moveToNext());
+		}
+    	
+    	return reciptListID;
+    }
 
+    /**
+     * Delete a list
+     * @param id of the list to be deleted
+     * @return true success, false otherwise
+     */
     public static boolean deleteList(long id) 
     {
     	boolean listRet = mDb.delete(LISTS_TABLE, LIST_ID + "=" + id, null) == 1;
@@ -370,32 +567,58 @@ public class DbAdapter {
     	return listRet;
     }
 
-    public static Cursor fetchAllLists() {
-
-		return mDb.query(LISTS_TABLE, 
+    /**
+     * Fetch all shop lists
+     * @return A Cursor to all shop lists in the first position
+     */
+    public static Cursor fetchAllLists()
+    {
+    	Cursor cursor = mDb.query(LISTS_TABLE, 
 				new String [] {LIST_ID, LIST_NAME, LIST_TIMESTAMP},
 				null, null, null, null, null);
+    	
+    	if (cursor != null)
+            cursor.moveToFirst();
+		
+    	return cursor;
     }
 
-    public static Cursor fetchList(long id) throws SQLException {
-
-        Cursor mCursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
+    /**
+     * Fetch a specific list
+     * @param id of the list to be fetched
+     * @return A Cursor to the fetched list in the first (and only) position
+     * @throws SQLException
+     */
+    public static Cursor fetchList(long id) throws SQLException 
+    {
+        Cursor cursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
             				LIST_NAME, LIST_TIMESTAMP}, LIST_ID + "=" + id, null,
             				null, null, null, null);
         
-        if (mCursor != null)
-            mCursor.moveToFirst();
+        if (cursor != null)
+            cursor.moveToFirst();
         
-        return mCursor;
+        return cursor;
     }
 
+    /**
+     * Update the name of a shop list
+     * @param id of the list
+     * @param listName new name
+     * @return true if one row was affected, false otherwise
+     */
     public static boolean updateList(long id, String listName) {
         ContentValues args = new ContentValues();
         args.put(LIST_NAME, listName);
 
-        return mDb.update(LISTS_TABLE, args, LIST_ID + "=" + id, null) > 0;
+        return mDb.update(LISTS_TABLE, args, LIST_ID + "=" + id, null) == 0;
     }
     
+    /**
+     * Get the name of a shop list
+     * @param id of the list
+     * @return The list name or null
+     */
     public static String getListName(long id)
     {
     	Cursor cursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
@@ -405,12 +628,20 @@ public class DbAdapter {
     	return cursor.moveToFirst() == true ? cursor.getString(cursor.getColumnIndex(LIST_NAME)) : null;
     }
     
-	public static int getCurrentListID() {
-		return currentListID;
+    /**
+     * Get current shop list ID
+     * @return
+     */
+	public static int getCurrentShopListID() {
+		return currentShopListID;
 	}
 
-	public static void setCurrentListID(int listID) {
-		currentListID = listID;
+	/**
+	 * Set current shop list ID
+	 * @param listID new current shop list ID
+	 */
+	public static void setCurrentShopListID(int listID) {
+		currentShopListID = listID;
 	}
     
 	/*
