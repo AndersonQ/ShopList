@@ -79,7 +79,7 @@ public class MyAdapter extends ArrayAdapter<Item>
         //Fill fields
         nameText.setText(item.getName());
         quantText.setText(String.valueOf(item.getQuantity()));
-        priceText.setText(String.valueOf((item.getPrice())));
+        priceText.setText(String.format("£%.2f",item.getPrice()));
         purchasedChk.setChecked(item.getPurchasedBool());
         
         //purchasedSwitch.setChecked(item.getPurchasedBool());
