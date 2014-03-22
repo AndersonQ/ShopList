@@ -14,14 +14,16 @@
 
 	<TextView android:id="@+id/item_name_row"
 	    android:textAppearance="?android:attr/textAppearanceLarge"
-	    android:layout_width="wrap_content"
+	    android:layout_weight="1"
+	    android:layout_width="0dp"
 	    android:layout_height="wrap_content"
 	    android:paddingLeft="15dp"
 		android:paddingRight="15dp"
 	    android:layout_gravity="left|center"/>
 	
 	<GridLayout
-        android:layout_width="wrap_content"
+	    android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="15dp"
@@ -62,7 +64,8 @@
 	</GridLayout>
 
 		<CheckBox android:id="@+id/item_purchased_checkbox_row"
-	        android:layout_width="wrap_content"
+		    android:layout_weight="1"
+	        android:layout_width="0dp"
 	        android:layout_height="wrap_content"
 	        android:layout_gravity="right|center"/>
 

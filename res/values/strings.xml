@@ -31,6 +31,8 @@
 
 
     <!-- Items -->
+    <string name="item_activity_price_txt">Total cost: £</string>
+    
     <!-- Items row -->
     <string name="no_items">No Items Yet</string>
     <string name="item_quant_text">Quantity: </string>
@@ -53,9 +55,9 @@
 
     <!-- Default values -->
     <string name="item_default_quant">1</string>
-    <string name="item_default_purchased">0</string>
 
     <!-- Action Bar -->
+    <string name="item_action_list_price">Total Cost</string>
     <string name="item_action_add">New Item</string>
     <string name="item_action_choose_list">Choose List</string>
     <!-- End Items Strings -->

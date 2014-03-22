@@ -1,12 +1,16 @@
 package br.eti.andersonq;
 
+import java.util.ArrayList;
+
 import br.eti.andersonq.shoplist.R;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -16,10 +20,13 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.TextView;
 
 /**
+ * 
  * @author	Anderson de Franca Queiroz
  * @email	contato@andersonq.eti.br
  */
@@ -33,6 +40,14 @@ public class ItemsMain extends Activity implements Update
     private static final int ITEM_DELETE_ID = Menu.FIRST;
     private static final int ITEM_EDIT_ID = Menu.FIRST + 1;
 	
+    
+    /*
+     * ************************************************************************
+     * ************************************************************************
+     * Android override methods
+     * ************************************************************************
+     * ************************************************************************
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
@@ -40,8 +55,13 @@ public class ItemsMain extends Activity implements Update
         setContentView(R.layout.items_list);
         //mDbHelper = new DbAdapter(this);
         DbAdapter.open(this);
-        getActionBar().setSubtitle(DbAdapter.getListName(DbAdapter.getCurrentListID()));
+        ActionBar ab = getActionBar();
+        ab.setSubtitle(DbAdapter.getListName(DbAdapter.getCurrentListID()));
 
+        //Fill data
+    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	price.setText(String.format("%.2f",listCost()));
+    	
         ListView listView = (ListView) findViewById(R.id.items_list_view);
         MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
 		listView.setAdapter(adapter);
@@ -56,7 +76,7 @@ public class ItemsMain extends Activity implements Update
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.item_action_bar, menu);
-        
+         
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -116,7 +136,15 @@ public class ItemsMain extends Activity implements Update
 		DbAdapter.close();
 		super.onDestroy();
 	}
-    
+	
+    /*
+     * ************************************************************************
+     * ************************************************************************
+     * My methods
+     * ************************************************************************
+     * ************************************************************************
+     */
+	
 	@Override
 	public void onSaveState() 
 	{
@@ -128,6 +156,9 @@ public class ItemsMain extends Activity implements Update
 	 */
     private void fillData() 
     {
+    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	price.setText(String.format("%.2f",listCost()));
+    	//ListView
         ListView listView = (ListView) findViewById(R.id.items_list_view);
         MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
 		listView.setAdapter(adapter);
@@ -148,9 +179,27 @@ public class ItemsMain extends Activity implements Update
     	fire.show(manager, "FRAGMENT");
     }
 
-    private void chooseList() {
+    private void chooseList() 
+    {
         Intent i = new Intent(this, ListsMain.class);
         startActivityForResult(i, ACTIVITY_LIST_MAIN);
     }
     
+    /**
+     * Calculate current shoplist total cost
+     * @return current shoplist total cost
+     */
+    private float listCost()
+    {
+    	//Get list items
+    	ArrayList<Item> items = DbAdapter.getAlltems();
+    	float totalCost = 0;
+    	
+    	for(Item item : items)
+    	{
+    		totalCost += item.getQuantity() * item.getPrice();
+    	}
+
+    	return totalCost;
+    }
 }
