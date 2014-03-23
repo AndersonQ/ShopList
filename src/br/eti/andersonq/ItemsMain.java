@@ -7,7 +7,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Application;
 import android.app.FragmentManager;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -59,7 +58,20 @@ public class ItemsMain extends Activity implements Update
 
         //Fill data
     	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
     	price.setText(String.format("%.2f",listCost()));
+    	if(Omniscient.isShopping())
+    	{
+    		pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    		pricetxt.setVisibility(View.VISIBLE);
+    		price.setVisibility(View.VISIBLE);
+    	}
+    	else
+    	{
+    		pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    		pricetxt.setVisibility(View.INVISIBLE);
+    		price.setVisibility(View.INVISIBLE);	
+    	}
     	
         ListView listView = (ListView) findViewById(R.id.items_list_view);
         MyAdapter adapter = new MyAdapter(this, 
@@ -69,9 +81,6 @@ public class ItemsMain extends Activity implements Update
 		listView.setClickable(true);
 		
         registerForContextMenu(listView);
-        //AlertDialog alert;
-        //alert.getListView().setOnCreateContextMenuListener(this);
-        //listView.setOnCreateContextMenuListener(this);
         
         //Get default settings
         PreferenceManager.setDefaultValues(app, R.xml.preferences, false);        
@@ -271,8 +280,11 @@ public class ItemsMain extends Activity implements Update
 		
 		//Set current receiptList	
 		DbAdapter.setCurrentReceiptListID((int) receiptListId);
+		
 		//Fill activity
 		fillData();
+		//Update total cost
+		updateCost();
 		
 		/* 
 		 * TODO
@@ -287,6 +299,14 @@ public class ItemsMain extends Activity implements Update
 	{
 		//Set shopping false
 		Omniscient.setShopping(false);
+		
+    	//Get textViews
+    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    	//Make text related to cost views invisible
+		pricetxt.setVisibility(View.INVISIBLE);
+		price.setVisibility(View.INVISIBLE);
+		
 		//Fill activity
 		fillData();
 	}
@@ -302,8 +322,13 @@ public class ItemsMain extends Activity implements Update
     @Override
     public void updateCost()
     {
+    	//Get textViews
     	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
-    	float p = listCost();
-    	price.setText(String.format("%.2f",p));
+    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    	//Set new total cost
+    	price.setText(String.format("%.2f", listCost()));
+    	//Make text views visible
+		pricetxt.setVisibility(View.VISIBLE);
+		price.setVisibility(View.VISIBLE);
     }
 }
