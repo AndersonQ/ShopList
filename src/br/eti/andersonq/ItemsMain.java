@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import br.eti.andersonq.shoplist.R;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Application;
 import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -18,10 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
 
@@ -52,22 +49,32 @@ public class ItemsMain extends Activity implements Update
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
+        Application app = getApplication();
+        Omniscient.setApp(app);
         setContentView(R.layout.items_list);
         //mDbHelper = new DbAdapter(this);
         DbAdapter.open(this);
         ActionBar ab = getActionBar();
-        ab.setSubtitle(DbAdapter.getListName(DbAdapter.getCurrentListID()));
+        ab.setSubtitle(DbAdapter.getListName(DbAdapter.getCurrentShopListID()));
 
         //Fill data
     	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
     	price.setText(String.format("%.2f",listCost()));
     	
         ListView listView = (ListView) findViewById(R.id.items_list_view);
-        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
+        MyAdapter adapter = new MyAdapter(this, 
+        								R.layout.items_list, 
+        								DbAdapter.getAllShopItems());
 		listView.setAdapter(adapter);
 		listView.setClickable(true);
 		
         registerForContextMenu(listView);
+        //AlertDialog alert;
+        //alert.getListView().setOnCreateContextMenuListener(this);
+        //listView.setOnCreateContextMenuListener(this);
+        
+        //Get default settings
+        PreferenceManager.setDefaultValues(app, R.xml.preferences, false);        
     }
 
     @Override
@@ -83,6 +90,9 @@ public class ItemsMain extends Activity implements Update
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) 
     {
+    	AdapterContextMenuInfo info;
+    	info = (AdapterContextMenuInfo) item.getMenuInfo();
+    	
         switch(item.getItemId()) 
         {
         	case R.id.item_action_add:
@@ -92,39 +102,53 @@ public class ItemsMain extends Activity implements Update
         	case R.id.item_action_choose_list:
         		chooseList();
             	return true;
+        	case R.id.item_action_go_shopping:
+        		startShopping();
+        		return true;
+        	case R.id.item_action_stop_shopping:
+        		stopShopping();
+        		return false;
+        	case R.id.item_action_settings:
+        		startActivity(new Intent(this, SettingsActivity.class));
+        		return true;
+        	case R.id.item_contextmenu_edit:
+        		editItem(info.id);
+            	return true;
+        	case R.id.item_contextmenu_delete:
+            	if(Omniscient.isShopping())
+            	{
+	            	boolean ret = DbAdapter.deleteReceiptItem(info.id);
+	            	if(!ret)
+	            		Log.e(TAG, "onContextItemSelected(): Error: list wasn't"
+	            				+ " deleted from DB");
+	                fillData();
+            	}
+            	else
+            	{
+	            	boolean ret = DbAdapter.deleteShopItem(info.id);
+	            	if(!ret)
+	            		Log.e(TAG, "onContextItemSelected(): Error: list wasn't"
+	            				+ " deleted from DB");
+	                fillData();
+            	}
+            	return true;
         }
-        return super.onMenuItemSelected(featureId, item);
+        return false;
     }
 
-    @Override
+	@Override
     public void onCreateContextMenu(ContextMenu menu, View v,
             ContextMenuInfo menuInfo) 
     {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, ITEM_DELETE_ID, 0, R.string.menu_item_delete);
-        menu.add(0, ITEM_EDIT_ID, 0, R.string.menu_item_edit);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) 
-    {
-    	AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-    	
-        switch(item.getItemId()) 
-        {
-            case ITEM_DELETE_ID:
-            	DbAdapter.deleteItem(info.id);
-                fillData();
-                return true;
-            case ITEM_EDIT_ID:
-            	editItem(info.id);
-            	return true;
-        }
-        return super.onContextItemSelected(item);
+        // Inflate the menu items for use in context menu
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.item_context_menu, menu);
     }
     
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) 
+    protected void onActivityResult(int requestCode, 
+    								int resultCode, 
+    								Intent intent) 
     {
         super.onActivityResult(requestCode, resultCode, intent);
         fillData();
@@ -157,10 +181,25 @@ public class ItemsMain extends Activity implements Update
 	 */
     private void fillData() 
     {
-    	ListView listView = (ListView) findViewById(R.id.items_list_view);
-        MyAdapter adapter = new MyAdapter(this, R.layout.items_list, DbAdapter.getAlltems());
-		listView.setAdapter(adapter);
-		listView.setClickable(true);
+    	if(Omniscient.isShopping())
+    	{
+    		ArrayList<Item> items = DbAdapter.getAllReceiptItems();
+	    	ListView listView = (ListView) findViewById(R.id.items_list_view);
+	        MyAdapter adapter = new MyAdapter(this, 
+	        								R.layout.items_list, 
+	        								items);
+			listView.setAdapter(adapter);
+			listView.setClickable(true);
+    	}
+    	else
+    	{
+	    	ListView listView = (ListView) findViewById(R.id.items_list_view);
+	        MyAdapter adapter = new MyAdapter(this, 
+	        								R.layout.items_list, 
+	        								DbAdapter.getAllShopItems());
+			listView.setAdapter(adapter);
+			listView.setClickable(true);
+    	}
     }
     
     /**
@@ -190,17 +229,67 @@ public class ItemsMain extends Activity implements Update
     private float listCost()
     {
     	//Get list items
-    	ArrayList<Item> items = DbAdapter.getAlltems();
+    	ArrayList<Item> items = DbAdapter.getAllShopItems();
     	float totalCost = 0;
     	
     	for(Item item : items)
     	{
-    		totalCost += item.getQuantity() * item.getPrice() * item.getPurchased();
+    		totalCost += 	item.getQuantity() * 
+    						item.getPrice() * 
+    						item.getPurchased();
     	}
-
     	return totalCost;
     }
     
+    /**
+	 * Start shopping
+	 */
+	private void startShopping()
+	{
+		//Set shopping true
+		Omniscient.setShopping(true);
+		//Create receipt list from current shop list
+		long receiptListId = DbAdapter.createReceiptList();
+		DbAdapter.setCurrentReceiptListID((int) receiptListId);
+		fillData();
+		
+		/* 
+		 * TODO
+		 * Use receipt list, it means go shopping
+		 * track prices and purchased flag
+		 * auto-remove option
+		 * */
+
+	}
+	
+    /**
+	 * Stop shopping
+	 */
+	private void stopShopping()
+	{
+		//Set shopping true
+		Omniscient.setShopping(false);
+		fillData();
+		//Create receipt list from current shop list
+		//DbAdapter.createReceiptList();
+		
+		/* 
+		 * TODO
+		 * Use receipt list, it means go shopping
+		 * track prices and purchased flag
+		 * auto-remove option
+		 * */
+
+	}
+    
+    /*
+     * ************************************************************************
+     * ************************************************************************
+     * My methods, Update interface methods
+     * ************************************************************************
+     * ************************************************************************
+     */
+	
     @Override
     public void updateCost()
     {
