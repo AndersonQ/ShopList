@@ -67,7 +67,6 @@ public class MyAdapter extends ArrayAdapter<Item>
             view.setClickable(true);
             view.setFocusableInTouchMode(true);
             view.setHapticFeedbackEnabled(true);
-            //view.setBackgroundResource(android.R.color.holo_blue_bright);
         	
 			//Get current item
 			Item item = items.get(position);
@@ -113,27 +112,16 @@ public class MyAdapter extends ArrayAdapter<Item>
             view.setClickable(true);
             view.setFocusableInTouchMode(true);
             view.setHapticFeedbackEnabled(true);
-            //view.setBackgroundResource(android.R.color.holo_blue_bright);
             
 			//Get current item
 			Item item = items.get(position);
 	        nameText = (TextView) view.findViewById(R.id.item_name_row);
 	        quantText = (TextView) view.findViewById(R.id.item_quant_row);
-	        //priceText = (TextView) view.findViewById(R.id.item_price_row);
-	        //purchasedChk = (CheckBox) view.findViewById(R.id.item_purchased_checkbox_row);
 	        
 	        //Fill fields
 	        nameText.setText(item.getName());
 	        quantText.setText(String.valueOf(item.getQuantity()));
-	        //priceText.setText(String.format("£%.2f",item.getPrice()));
-	        //purchasedChk.setChecked(item.getPurchasedBool());
         }
-
-        //Cross out item name if purchased
-        /*if(purchasedSwitch.isChecked())
-        	nameText.setPaintFlags(nameText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-        else
-        	nameText.setPaintFlags(nameText.getPaintFlags() | ~Paint.STRIKE_THRU_TEXT_FLAG);*/
 
         view.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) 
@@ -162,26 +150,6 @@ public class MyAdapter extends ArrayAdapter<Item>
             	((Update) mContext).updateDisplayedData();
             }
         });
-
-        /*
-        purchasedChk.setOnCheckedChangeListener(new OnCheckedChangeListener()
-        {
-           	   @Override
-        	   public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) 
-           	   {
-           		   Item item = items.get(position);
-           		   
-           		   Log.d(TAG, "Before save chkBox " + isChecked + " item " + item.getName() + " id " + item.getId() + " purchased " + item.getPurchasedBool());
-           		   if(item.getPurchasedBool() != isChecked)
-           		   {
-           			   item.setPurchased(isChecked == true ? 1 : 0);
-           			   boolean ret = DbAdapter.updateItem(item);
-           			   if(!ret)
-           				   Log.e(TAG, "CheckBox item wasn't updated! Name " + item.getName() + " Id " +item.getId());
-           		   }
-           		   Log.d(TAG, "After save chkBox " + isChecked + " item " + item.getName() + " id " + item.getId() + " purchased " + item.getPurchasedBool());
-        	   }
-        });*/
 
 		return view;
 	}
