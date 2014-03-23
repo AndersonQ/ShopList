@@ -79,6 +79,8 @@ public class DbAdapter
 	//Primary key
 	public static final String LIST_ID = "_id";
 	public static final String LIST_NAME = "name";
+	//Foreign key to Receipt list table
+	public static final String LIST_RECEIPT_LIST_ID = "receipt_list_id";
 	public static final String LIST_TIMESTAMP = "time_stamp";
 	
 	/*
@@ -119,6 +121,7 @@ public class DbAdapter
 			LISTS_TABLE + " (" +
 			LIST_ID + " integer primary key autoincrement, " +
 			LIST_NAME + " text not null, " + 
+			LIST_RECEIPT_LIST_ID + " integer, " +
 			LIST_TIMESTAMP + " timestamp not null default current_timestamp);";
 	
 	public static final String DB_CREATE_RECEIPT_TABLE = "create table " + 
@@ -134,7 +137,7 @@ public class DbAdapter
 	//Keep track of the current shop list being used
 	private static int currentShopListID = 1;
 	//Keep track of the current receipt list being used
-	private static int currentReceiptListID = 1;
+	private static int currentReceiptListID = -2;
 
 	private static DatabaseHelper mDbHelper;
     private static SQLiteDatabase mDb;
@@ -242,7 +245,7 @@ public class DbAdapter
         args.put(RECEIPT_ITEM_QUANTITY, item.getQuantity());
         args.put(RECEIPT_ITEM_PRICE, item.getPrice());
         args.put(RECEIPT_ITEM_PURCHASED, item.getPurchased());
-        args.put(RECEIPT_ITEM_LIST_ID, item.getId());
+        args.put(RECEIPT_ITEM_LIST_ID, (int) item.getId());
         
     	return mDb.insert(RECEIPT_ITEMS_TABLE, null, args);
     }
@@ -280,7 +283,7 @@ public class DbAdapter
      */
     public static boolean deleteShopItem(long id) 
     {
-    	int affectedRows = mDb.delete(ITEMS_TABLE, ITEM_ID + "=" + id, null);
+    	int affectedRows = mDb.delete(ITEMS_TABLE, ITEM_ID + "=" + (int)id, null);
         return  affectedRows == 1;
     }
     
@@ -291,13 +294,14 @@ public class DbAdapter
      */
     public static boolean deleteReceiptItem(long id) 
     {
-        return mDb.delete(RECEIPT_ITEMS_TABLE, RECEIPT_ITEM_ID + "=" + id, null) == 1;
+        return mDb.delete(RECEIPT_ITEMS_TABLE, RECEIPT_ITEM_ID + "=" + (int)id, null) == 1;
     }
 
     public static Cursor fetchAllItem() {
 
         return mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
-                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + getCurrentShopListID(), null, null, null, null);
+                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" +
+                		currentShopListID, null, null, null, null);
     }
 
     /**
@@ -307,11 +311,25 @@ public class DbAdapter
     public static ArrayList<Item> getAllShopItems()
     {
     	//Id of each correspondent column 
-    	int idxITEM_ID, idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
+    	int idxITEM_ID, 
+    		idxITEM_NAME, 
+    		idxITEM_QUANTITY, 
+    		idxITEM_PRICE, 
+    		idxITEM_PURCHASED, 
+    		idxITEM_LIST_ID;
+    	
     	//Array to store all items of this list
     	ArrayList<Item> items = new ArrayList<Item>();
     	//Cursor to old list
-    	Cursor itemsCursor = mDb.query(ITEMS_TABLE, null, ITEM_LIST_ID + "=" + getCurrentShopListID(), null, null, null, null);
+    	Cursor itemsCursor = mDb.query(ITEMS_TABLE, 
+    									new String[] 	{ITEM_ID, 
+    													ITEM_NAME,
+    													ITEM_QUANTITY, 
+    													ITEM_PRICE, 
+    													ITEM_PURCHASED,
+    													ITEM_LIST_ID}, 
+    									ITEM_LIST_ID + "=" + currentShopListID, 
+    									null, null, null, null);
     	//Go to first item, if there isen't a first so there is no items at all
     	if(itemsCursor.moveToFirst())
     	{
@@ -335,7 +353,6 @@ public class DbAdapter
 	    		items.add(new Item(id, listId, name, quantity, price, purchased));
 	    	}while (itemsCursor.moveToNext());
     	}
-    	
     	return items;
     }
     
@@ -350,7 +367,7 @@ public class DbAdapter
     	//Array to store all items of this list
     	ArrayList<Item> items = new ArrayList<Item>();
     	//Cursor to receipt list
-    	Cursor itemsCursor = mDb.query(RECEIPT_ITEMS_TABLE, null, RECEIPT_ITEM_LIST_ID + " = " + getCurrentReceiptListID(), null, null, null, null);
+    	Cursor itemsCursor = mDb.query(RECEIPT_ITEMS_TABLE, null, RECEIPT_ITEM_LIST_ID + " = " + currentReceiptListID, null, null, null, null);
     	//Go to first item, if there isen't a first so there is no items at all
     	if(itemsCursor.moveToFirst())
     	{
@@ -374,7 +391,6 @@ public class DbAdapter
 	    		items.add(new Item(id, listId, name, quantity, price, purchased));
 	    	}while (itemsCursor.moveToNext());
     	}
-    	
     	return items;
     }
 
@@ -383,7 +399,7 @@ public class DbAdapter
         Cursor mCursor =
 
             mDb.query(true, ITEMS_TABLE, new String[] {ITEM_ID,
-                    ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_ID + "=" + rowId, null,
+                    ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_ID + "=" + (int)rowId, null,
                     null, null, null, null);
         if (mCursor != null) {
             mCursor.moveToFirst();
@@ -404,7 +420,7 @@ public class DbAdapter
     	Item item = null;
     	//Cursor to old list
     	Cursor itemsCursor = mDb.query(true, ITEMS_TABLE, new String[] {ITEM_ID,
-                ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED, ITEM_LIST_ID}, ITEM_ID + "=" + id, null,
+                ITEM_NAME, ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED, ITEM_LIST_ID}, ITEM_ID + "=" + (int)id, null,
                 null, null, null, null);
     	//Go to first item, if there isen't a first so there is no items at all
     	if(itemsCursor.moveToFirst())
@@ -440,9 +456,15 @@ public class DbAdapter
     	//Array to store all items of this list
     	Item item = null;
     	//Cursor to old list
-    	Cursor itemsCursor = mDb.query(true, RECEIPT_ITEMS_TABLE, new String[] {RECEIPT_ITEM_ID,
-    			RECEIPT_ITEM_NAME, RECEIPT_ITEM_QUANTITY, RECEIPT_ITEM_PRICE, RECEIPT_ITEM_PURCHASED, RECEIPT_ITEM_LIST_ID}, RECEIPT_ITEM_ID + "=" + id, null,
-                null, null, null, null);
+    	Cursor itemsCursor = mDb.query(true, RECEIPT_ITEMS_TABLE, 
+    			new String[] {	RECEIPT_ITEM_ID,
+    							RECEIPT_ITEM_NAME, 
+    							RECEIPT_ITEM_QUANTITY, 
+    							RECEIPT_ITEM_PRICE, 
+    							RECEIPT_ITEM_PURCHASED, 
+    							RECEIPT_ITEM_LIST_ID}, 
+    							RECEIPT_ITEM_ID + "=" + (int)id, 
+    							null, null, null, null, null);
     	//Go to first item, if there isen't a first so there is no items at all
     	if(itemsCursor.moveToFirst())
     	{
@@ -485,7 +507,7 @@ public class DbAdapter
         args.put(ITEM_PRICE, price);
         args.put(ITEM_PURCHASED, purchased);
 
-        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + id, null) == 1;
+        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + (int)id, null) == 1;
     }
     
     /**
@@ -507,7 +529,7 @@ public class DbAdapter
         args.put(ITEM_QUANTITY, quant);
         args.put(ITEM_PRICE, price);
 
-        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + id, null) == 1;
+        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + (int)id, null) == 1;
     }
     
     /**
@@ -523,7 +545,7 @@ public class DbAdapter
         args.put(ITEM_PRICE, item.getPrice());
         args.put(ITEM_PURCHASED, item.getPurchased());
 
-        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + item.getId(), null) == 1;
+        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + (int)item.getId(), null) == 1;
     }
     
     /**
@@ -540,7 +562,7 @@ public class DbAdapter
         args.put(RECEIPT_ITEM_PURCHASED, item.getPurchased());
 
         return mDb.update(RECEIPT_ITEMS_TABLE, args, 
-        				RECEIPT_ITEM_ID + " = " + item.getId(), null) == 1;
+        				RECEIPT_ITEM_ID + " = " + (int)item.getId(), null) == 1;
     }
     
     /*
@@ -561,14 +583,15 @@ public class DbAdapter
      * ************************************************************************
      */
     /**
-     * Create a new list
-     * @param listName name of new list
+     * Create a new shop list
+     * @param listName name of new shop list
      * @return
      */
-    public static long createList(String listName) {
+    public static long createShopList(String listName) {
 		ContentValues initVals = new ContentValues();
 		
 		initVals.put(LIST_NAME, listName);
+		initVals.put(LIST_RECEIPT_LIST_ID, 0);
 		
 		return mDb.insert(LISTS_TABLE, null, initVals);
     }
@@ -587,7 +610,7 @@ public class DbAdapter
     	idxITEM_PURCHASED = oldList.getColumnIndex(ITEM_PURCHASED);
     	
     	//Create new list
-    	long newListID = createList(newListName);
+    	long newListID = createShopList(newListName);
     	
     	//Go to first item
     	oldList.moveToFirst();
@@ -610,18 +633,24 @@ public class DbAdapter
     public static long createReceiptList(long shopListId)
     {
     	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
-    	String shopListName = getListName(shopListId);
+    	String shopListName = getShopListName(shopListId);
 		ContentValues value = new ContentValues();
 		
 		//Create new receipt list with the same name as shop list
 		value.put(RECEIPT_LIST_NAME, shopListName);
-		long reciptListID =  mDb.insert(LISTS_TABLE, null, value);
+		long reciptListID =  mDb.insert(RECEIPT_LIST_TABLE, null, value);
 		
 		if(reciptListID != -1)//Receipt list was successfully created
 		{
 	    	//Cursor to shop list
-	    	Cursor shopList = mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
-	                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) shopListId, null, null, null, null);
+	    	Cursor shopList = mDb.query(ITEMS_TABLE, 
+	    			new String[] {	ITEM_ID, ITEM_NAME,
+	                				ITEM_QUANTITY, 
+	                				ITEM_PRICE, 
+	                				ITEM_PURCHASED,
+	                				ITEM_LIST_ID}, 
+	                ITEM_LIST_ID + "=" + (int) shopListId, 
+	                null, null, null, null);
 	
 	    	//Get column index to each column
 	    	idxITEM_NAME = shopList.getColumnIndex(ITEM_NAME);
@@ -660,7 +689,7 @@ public class DbAdapter
     public static boolean deleteList(long id) 
     {
     	boolean listRet = mDb.delete(LISTS_TABLE, LIST_ID + "=" + id, null) == 1;
-    	mDb.delete(ITEMS_TABLE, ITEM_LIST_ID + "=" + id, null);
+    	mDb.delete(ITEMS_TABLE, ITEM_LIST_ID + "=" + (int)id, null);
     	
     	return listRet;
     }
@@ -669,7 +698,7 @@ public class DbAdapter
      * Fetch all shop lists
      * @return A Cursor to all shop lists in the first position
      */
-    public static Cursor fetchAllLists()
+    public static Cursor fetchAllShopLists()
     {
     	Cursor cursor = mDb.query(LISTS_TABLE, 
 				new String [] {LIST_ID, LIST_NAME, LIST_TIMESTAMP},
@@ -687,10 +716,10 @@ public class DbAdapter
      * @return A Cursor to the fetched list in the first (and only) position
      * @throws SQLException
      */
-    public static Cursor fetchList(long id) throws SQLException 
+    public static Cursor fetchShopList(long id) throws SQLException 
     {
         Cursor cursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
-            				LIST_NAME, LIST_TIMESTAMP}, LIST_ID + "=" + id, null,
+            				LIST_NAME, LIST_TIMESTAMP}, LIST_ID + "=" + (int)id, null,
             				null, null, null, null);
         
         if (cursor != null)
@@ -705,11 +734,11 @@ public class DbAdapter
      * @param listName new name
      * @return true if one row was affected, false otherwise
      */
-    public static boolean updateList(long id, String listName) {
+    public static boolean updateShopList(long id, String listName) {
         ContentValues args = new ContentValues();
         args.put(LIST_NAME, listName);
 
-        return mDb.update(LISTS_TABLE, args, LIST_ID + "=" + id, null) == 0;
+        return mDb.update(LISTS_TABLE, args, LIST_ID + "=" + (int)id, null) == 0;
     }
     
     /**
@@ -717,15 +746,58 @@ public class DbAdapter
      * @param id of the list
      * @return The list name or null
      */
-    public static String getListName(long id)
+    public static String getShopListName(long id)
     {
     	Cursor cursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
-				LIST_NAME}, LIST_ID + "=" + id, null,
+				LIST_NAME}, LIST_ID + "=" + (int)id, null,
 				null, null, null, null);
     	    	
     	return cursor.moveToFirst() == true ? cursor.getString(cursor.getColumnIndex(LIST_NAME)) : null;
     }
     
+    /**
+     * Set shopList foreign key to Receipt list table
+     * @param shopId, ShopList id
+     * @param receiptId, ReceiptList id
+     * @return true if one row was affected, false otherwise
+     */
+    public static boolean setShopListReceiptList(long shopId, long receiptId)
+    {
+        ContentValues args = new ContentValues();
+        args.put(LIST_RECEIPT_LIST_ID, receiptId);
+
+        return mDb.update(LISTS_TABLE, args, LIST_ID + "=" + (int)shopId, null) == 0;
+    }
+    
+    /**
+     * Get the id of receipt list associated to a shopList
+     * @param shopListId, id of shop list
+     * @return id of associated receipt,
+     *          0 if there is no associated receipt list,
+     *         -1 if it was not found
+     */
+    public static long getReceiptListFromShopList(long shopListId)
+    {
+    	Cursor cursor = mDb.query(true, LISTS_TABLE, 
+    			new String[] {LIST_RECEIPT_LIST_ID},
+				LIST_ID + "=" + (int)shopListId, null,
+				null, null, null, null);
+    	    	
+    	return cursor.moveToFirst() == true ? 
+    		cursor.getLong(cursor.getColumnIndex(LIST_RECEIPT_LIST_ID)) : -1;
+    }
+    
+    /**
+     * Get the id of receipt list associated to current shopList
+     * @return id of associated receipt,
+     *          0 if there is no associated receipt list,
+     *         -1 if it was not found
+     */
+    public static long getReceiptListFromShopList()
+    {
+    	return getReceiptListFromShopList(currentShopListID);
+    }
+        
     /**
      * Get current shop list ID
      * @return current shop list ID
