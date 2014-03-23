@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.eti.andersonq.shoplist" >
+    package="br.eti.andersonq.shoplist"
+    android:versionCode="1"
+    android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="16" />
 
     <application
+        android:label="@string/app_name"
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:theme="@android:style/Theme.Holo.Light" >
@@ -25,6 +28,10 @@
             android:name="br.eti.andersonq.ListsMain"
             android:label="@string/list_choose"
             android:parentActivityName="br.eti.andersonq.ListsMain" />
+        <activity
+            android:name="br.eti.andersonq.SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName="br.eti.andersonq.ItemsMain" />
         
     </application>
 
