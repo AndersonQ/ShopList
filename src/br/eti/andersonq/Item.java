@@ -7,12 +7,12 @@ package br.eti.andersonq;
  */
 public class Item {
 
-	public	long id;
-	public	long listId;
-	public	String name;
-	public	int quantity;
-	public	float price;
-	public	int purchased;
+	private	long id;
+	private	long listId;
+	private	String name;
+	private	int quantity;
+	private	float price;
+	private	int purchased;
 	
 	/**
 	 * 
