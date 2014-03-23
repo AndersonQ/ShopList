@@ -170,10 +170,10 @@ public class ItemEditFrag extends DialogFragment {
 		if (mId == -1)//Creating Item
 		{
 				long id = Omniscient.isShopping() ? 
+						DbAdapter.createReceiptItem(name, quant, 0, 0, 
+								DbAdapter.getCurrentReceiptListID()) :
 						DbAdapter.createShopItem(name, quant, 0, 0, 
-								DbAdapter.getCurrentShopListID()) :
-						DbAdapter.createShopItem(name, quant, 0, 0, 
-								DbAdapter.getCurrentReceiptListID());
+								DbAdapter.getCurrentShopListID());
 			if(id > 0)
 				mId = (int) id;
 		}
