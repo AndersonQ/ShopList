@@ -55,7 +55,7 @@ public class ItemsMain extends Activity implements Update
         //mDbHelper = new DbAdapter(this);
         DbAdapter.open(this);
         ActionBar ab = getActionBar();
-        ab.setSubtitle(DbAdapter.getListName(DbAdapter.getCurrentShopListID()));
+        ab.setSubtitle(DbAdapter.getShopListName(DbAdapter.getCurrentShopListID()));
 
         //Fill data
     	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
@@ -180,7 +180,7 @@ public class ItemsMain extends Activity implements Update
 	}
 	
 	/**
-	 * Fill the activity with the current list items
+	 * Fill the activity with the current items list
 	 */
     private void fillData() 
     {
@@ -251,9 +251,20 @@ public class ItemsMain extends Activity implements Update
 	{
 		//Set shopping true
 		Omniscient.setShopping(true);
-		//Create receipt list from current shop list
-		long receiptListId = DbAdapter.createReceiptList();
+		//Try to get RecipList associated with current shop list
+		long receiptListId = DbAdapter.getReceiptListFromShopList();
+		
+		if(receiptListId == 0)//No associated receiptList
+			//Create receipt list from current shop list
+			receiptListId = DbAdapter.createReceiptList();
+		else if(receiptListId == -1)
+			Log.e(TAG, "startShopping(): Error: "
+					+ "DbAdapter.getReceiptListFromShopList()"
+					+ "returned -1, error in sql query");
+		
+		//Set current receiptList	
 		DbAdapter.setCurrentReceiptListID((int) receiptListId);
+		//Fill activity
 		fillData();
 		
 		/* 
@@ -272,17 +283,8 @@ public class ItemsMain extends Activity implements Update
 	{
 		//Set shopping true
 		Omniscient.setShopping(false);
+		//Fill activity
 		fillData();
-		//Create receipt list from current shop list
-		//DbAdapter.createReceiptList();
-		
-		/* 
-		 * TODO
-		 * Use receipt list, it means go shopping
-		 * track prices and purchased flag
-		 * auto-remove option
-		 * */
-
 	}
     
     /*
