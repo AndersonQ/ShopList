@@ -326,6 +326,10 @@ public class DbAdapter
     	return items;
     }
     
+    /**
+     * Get all item of current receipt list
+     * @return A array of Item
+     */
     public static ArrayList<Item> getAllReceiptItems()
     {
     	//Id of each correspondent column 
@@ -333,7 +337,7 @@ public class DbAdapter
     	//Array to store all items of this list
     	ArrayList<Item> items = new ArrayList<Item>();
     	//Cursor to receipt list
-    	Cursor itemsCursor = mDb.query(RECEIPT_ITEMS_TABLE, null, RECEIPT_ITEM_LIST_ID + "=" + getCurrentReceiptListID(), null, null, null, null);
+    	Cursor itemsCursor = mDb.query(RECEIPT_ITEMS_TABLE, null, RECEIPT_ITEM_LIST_ID + " = " + getCurrentReceiptListID(), null, null, null, null);
     	//Go to first item, if there isen't a first so there is no items at all
     	if(itemsCursor.moveToFirst())
     	{
@@ -574,7 +578,7 @@ public class DbAdapter
 	    				shopList.getInt(idxITEM_QUANTITY),
 	    				shopList.getFloat(idxITEM_PRICE),
 	    				shopList.getInt(idxITEM_PURCHASED), 
-	    				shopListId );
+	    				reciptListID );
 	    	}while (shopList.moveToNext());
 		}
     	
