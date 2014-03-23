@@ -253,14 +253,21 @@ public class ItemsMain extends Activity implements Update
 		Omniscient.setShopping(true);
 		//Try to get RecipList associated with current shop list
 		long receiptListId = DbAdapter.getReceiptListFromShopList();
-		
 		if(receiptListId == 0)//No associated receiptList
+		{
 			//Create receipt list from current shop list
 			receiptListId = DbAdapter.createReceiptList();
+			//Set shopList foreign key to new receipt list
+			DbAdapter.setShopListReceiptList(
+							DbAdapter.getCurrentShopListID(), 
+							receiptListId);
+		}
 		else if(receiptListId == -1)
+		{
 			Log.e(TAG, "startShopping(): Error: "
 					+ "DbAdapter.getReceiptListFromShopList()"
 					+ "returned -1, error in sql query");
+		}
 		
 		//Set current receiptList	
 		DbAdapter.setCurrentReceiptListID((int) receiptListId);
@@ -269,11 +276,8 @@ public class ItemsMain extends Activity implements Update
 		
 		/* 
 		 * TODO
-		 * Use receipt list, it means go shopping
-		 * track prices and purchased flag
 		 * auto-remove option
 		 * */
-
 	}
 	
     /**
@@ -281,7 +285,7 @@ public class ItemsMain extends Activity implements Update
 	 */
 	private void stopShopping()
 	{
-		//Set shopping true
+		//Set shopping false
 		Omniscient.setShopping(false);
 		//Fill activity
 		fillData();
