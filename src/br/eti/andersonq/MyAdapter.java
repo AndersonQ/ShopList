@@ -56,19 +56,19 @@ public class MyAdapter extends ArrayAdapter<Item>
 		TextView priceText;
 		CheckBox purchasedChk;
 	    View view = convertView;
-	    
-		if(view == null)
-		{
-			view = viewinf.inflate(R.layout.items_shop_row, null);
-		}
-        view.setLongClickable(true);
-        view.setClickable(true);
-        view.setFocusableInTouchMode(true);
-        view.setHapticFeedbackEnabled(true);
-        //view.setBackgroundResource(android.R.color.holo_blue_bright);
 		
         if(Omniscient.isShopping())
         {
+    		if(view == null)
+    		{
+    			view = viewinf.inflate(R.layout.items_receipt_row, null);
+    		}
+            view.setLongClickable(true);
+            view.setClickable(true);
+            view.setFocusableInTouchMode(true);
+            view.setHapticFeedbackEnabled(true);
+            //view.setBackgroundResource(android.R.color.holo_blue_bright);
+        	
 			//Get current item
 			Item item = items.get(position);
 	        nameText = (TextView) view.findViewById(R.id.item_name_row);
@@ -94,9 +94,9 @@ public class MyAdapter extends ArrayAdapter<Item>
 	       		   	if(item.getPurchasedBool() != isChecked)
 	       		   	{
 	       		   		item.setPurchased(isChecked == true ? 1 : 0);
-	       		   		boolean ret = DbAdapter.updateShopItem(item);
+	       		   		boolean ret = DbAdapter.updateReceiptItem(item);
 	       		   		if(!ret)//If there was a problem, log it
-	       		   			Log.e(TAG, "CheckBox: item wasn't updated on DB! Name " + item.getName() + " Id " +item.getId());
+	       		   			Log.e(TAG, "CheckBox: receipt item wasn't updated on DB! Name " + item.getName() + " Id " +item.getId());
 	       		   	}
 					//Update total cost
 					((ItemsMain) mContext).updateCost();
@@ -105,6 +105,16 @@ public class MyAdapter extends ArrayAdapter<Item>
         }
         else
         {
+    		if(view == null)
+    		{
+    			view = viewinf.inflate(R.layout.items_shop_row, null);
+    		}
+            view.setLongClickable(true);
+            view.setClickable(true);
+            view.setFocusableInTouchMode(true);
+            view.setHapticFeedbackEnabled(true);
+            //view.setBackgroundResource(android.R.color.holo_blue_bright);
+            
 			//Get current item
 			Item item = items.get(position);
 	        nameText = (TextView) view.findViewById(R.id.item_name_row);

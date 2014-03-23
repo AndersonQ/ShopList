@@ -119,7 +119,8 @@ public class ItemsMain extends Activity implements Update
             	{
 	            	boolean ret = DbAdapter.deleteReceiptItem(info.id);
 	            	if(!ret)
-	            		Log.e(TAG, "onContextItemSelected(): Error: list wasn't"
+	            		Log.e(TAG, "onContextItemSelected(): "
+	            				+ "Error: receipt item wasn't"
 	            				+ " deleted from DB");
 	                fillData();
             	}
@@ -127,7 +128,8 @@ public class ItemsMain extends Activity implements Update
             	{
 	            	boolean ret = DbAdapter.deleteShopItem(info.id);
 	            	if(!ret)
-	            		Log.e(TAG, "onContextItemSelected(): Error: list wasn't"
+	            		Log.e(TAG, "onContextItemSelected(): "
+	            				+ "Error: shop item wasn't"
 	            				+ " deleted from DB");
 	                fillData();
             	}
@@ -172,7 +174,8 @@ public class ItemsMain extends Activity implements Update
 	@Override
 	public void updateDisplayedData() 
 	{
-		updateCost();
+		if(Omniscient.isShopping())
+			updateCost();
 		fillData();
 	}
 	
@@ -229,7 +232,7 @@ public class ItemsMain extends Activity implements Update
     private float listCost()
     {
     	//Get list items
-    	ArrayList<Item> items = DbAdapter.getAllShopItems();
+    	ArrayList<Item> items = DbAdapter.getAllReceiptItems();
     	float totalCost = 0;
     	
     	for(Item item : items)
@@ -294,6 +297,7 @@ public class ItemsMain extends Activity implements Update
     public void updateCost()
     {
     	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
-    	price.setText(String.format("%.2f",listCost()));
+    	float p = listCost();
+    	price.setText(String.format("%.2f",p));
     }
 }

@@ -130,34 +130,38 @@ public class ItemEditFrag extends DialogFragment {
 	}
 	
 	private void populateFields() 
-	{		
+	{
 		//If it is creating a new item there is no information to populate fields
 		if(mId != -1)
 		{
-			Cursor note = DbAdapter.fetchItem(mId);
-			getActivity().startManagingCursor(note);
-			
-			//Set activity title
-			getDialog().setTitle(R.string.item_edit);
-						
-			//Fill the fields with item information
-			mNameText.setText(note.getString(
-					note.getColumnIndexOrThrow(DbAdapter.ITEM_NAME)));
-			mQuantText.setText(String.valueOf(
-					note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY))));
-			mPriceText.setText(String.valueOf(
-					note.getFloat(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE))));
+			Item item;
+			//Get shop Item or receipt item depending if isShopping or not
+			item = Omniscient.isShopping() 	?	DbAdapter.getReceiptItem(mId) :
+												DbAdapter.getShopItem(mId);
+			mNameText.setText(item.getName());
+			mQuantText.setText(String.valueOf(item.getQuantity()));
+			mPriceText.setText(String.valueOf(item.getPrice()));
 		}
+		/*
+			else
+			{
+					Cursor note = DbAdapter.fetchItem(mId);
+					getActivity().startManagingCursor(note);
+					
+					//Set activity title
+					getDialog().setTitle(R.string.item_edit);
+								
+					//Fill the fields with item information
+					mNameText.setText(note.getString(
+							note.getColumnIndexOrThrow(DbAdapter.ITEM_NAME)));
+					mQuantText.setText(String.valueOf(
+							note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY))));
+					mPriceText.setText(String.valueOf(
+							note.getFloat(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE))));
+			}
+		}*/
 	}
-    /**
-     * Create an item
-     * @param itemName item name
-     * @param itemQuant item quantity
-     * @param price item price
-     * @param purchased purchased if the item was purchased (0-false, 1-true)
-     * @param listId if of the item's list
-     * @return new item ID
-     */
+
 	private void saveState() 
 	{
 		String name = mNameText.getText().toString();
@@ -165,22 +169,38 @@ public class ItemEditFrag extends DialogFragment {
 		
 		if (mId == -1)//Creating Item
 		{
-			long id = DbAdapter.createShopItem(name, quant, 0, 0, DbAdapter.getCurrentShopListID());
+				long id = Omniscient.isShopping() ? 
+						DbAdapter.createShopItem(name, quant, 0, 0, 
+								DbAdapter.getCurrentShopListID()) :
+						DbAdapter.createShopItem(name, quant, 0, 0, 
+								DbAdapter.getCurrentReceiptListID());
 			if(id > 0)
 				mId = (int) id;
 		}
 		else//Editing Item
 		{
-			//Get item
-			Item item = DbAdapter.getItem(mId);
-			//Set new price
-			item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
-			//Save on DB
-			boolean ret = DbAdapter.updateShopItem(item);
-			if(!ret) //If there was a problem, log it
-				Log.e(TAG, "saveState(): Error: item wasn't saved in DB");
-			item = DbAdapter.getItem(mId);
-			//DbAdapter.updateItem(mId, name, quant, price);
+			if(Omniscient.isShopping())
+			{
+				//Get item
+				Item item = DbAdapter.getReceiptItem(mId);
+				//Set new price
+				item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
+				//Save on DB
+				boolean ret = DbAdapter.updateReceiptItem(item);
+				if(!ret) //If there was a problem, log it
+					Log.e(TAG, "saveState(): Error: Receipt item wasn't saved in DB");
+			}
+			else
+			{
+				//Get item
+				Item item = DbAdapter.getShopItem(mId);
+				//Set new price
+				item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
+				//Save on DB
+				boolean ret = DbAdapter.updateShopItem(item);
+				if(!ret) //If there was a problem, log it
+					Log.e(TAG, "saveState(): Error: Shop item wasn't saved in DB");
+			}
 		}
 	}
 }
