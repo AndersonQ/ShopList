@@ -85,28 +85,12 @@ public class ItemEditFrag extends DialogFragment {
 	    {
 	        throw new ClassCastException(activity.toString() + " must implement Update");
 	    }
-		
-		/*
-		//Create DbAdapter to deal with database
-        mDbHelper = new DbAdapter(activity);
-        //Open database
-        mDbHelper.open();*/
 	}
 
 	@Override
     public void onStart() 
     {
         super.onStart();
-        /* it is not working, using POG/KOP (Kludge Oriented Programming)
-        //Get arguments
-        Bundle args = getArguments();
-        if (args != null) 
-        	//Get Item id
-        	mId = args.getInt(ITEM_ID);
-        else
-        	//Set -1 so it know that a new item is being created
-        	mId = -1;*/
-        ////Get arguments - working
         
         if(mId == -1)//Create Item
         {
@@ -142,24 +126,6 @@ public class ItemEditFrag extends DialogFragment {
 			mQuantText.setText(String.valueOf(item.getQuantity()));
 			mPriceText.setText(String.valueOf(item.getPrice()));
 		}
-		/*
-			else
-			{
-					Cursor note = DbAdapter.fetchItem(mId);
-					getActivity().startManagingCursor(note);
-					
-					//Set activity title
-					getDialog().setTitle(R.string.item_edit);
-								
-					//Fill the fields with item information
-					mNameText.setText(note.getString(
-							note.getColumnIndexOrThrow(DbAdapter.ITEM_NAME)));
-					mQuantText.setText(String.valueOf(
-							note.getInt(note.getColumnIndexOrThrow(DbAdapter.ITEM_QUANTITY))));
-					mPriceText.setText(String.valueOf(
-							note.getFloat(note.getColumnIndexOrThrow(DbAdapter.ITEM_PRICE))));
-			}
-		}*/
 	}
 
 	private void saveState() 
