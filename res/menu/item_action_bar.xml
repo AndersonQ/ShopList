@@ -1,9 +1,24 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+   
+    <!-- Appear on action bar -->
+
     <item android:id="@+id/item_action_add"
           android:icon="@drawable/ic_action_new"
           android:title="@string/item_action_add"
           android:showAsAction="always" />
+    
+    <!-- Inside action bar menu -->
 	<item android:id="@+id/item_action_choose_list"
           android:title="@string/item_action_choose_list"
+          android:showAsAction="never" />
+	<item android:id="@+id/item_action_go_shopping"
+          android:title="@string/item_action_go_shopping"
+          android:showAsAction="never" />
+	<item android:id="@+id/item_action_stop_shopping"
+          android:title="@string/item_action_stop_shopping"
+          android:showAsAction="never" />
+	<item android:id="@+id/item_action_settings"
+          android:title="@string/settings"
           android:showAsAction="never" />
 </menu>
