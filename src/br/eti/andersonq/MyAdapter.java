@@ -7,8 +7,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -35,8 +37,6 @@ public class MyAdapter extends ArrayAdapter<Item>
 
 	private ArrayList<Item> items;
 	private Context mContext;
-	private View mView;
-
 	
 	LayoutInflater viewinf;
 	
@@ -54,13 +54,12 @@ public class MyAdapter extends ArrayAdapter<Item>
 		TextView nameText;
 		TextView quantText;
 		TextView priceText;
-	    //Switch purchasedSwitch;
 		CheckBox purchasedChk;
-	    View view = mView = convertView;
+	    View view = convertView;
 	    
 		if(view == null)
 		{
-			view = mView = viewinf.inflate(R.layout.items_row, null);
+			view = viewinf.inflate(R.layout.items_shop_row, null);
 		}
         view.setLongClickable(true);
         view.setClickable(true);
@@ -68,23 +67,58 @@ public class MyAdapter extends ArrayAdapter<Item>
         view.setHapticFeedbackEnabled(true);
         //view.setBackgroundResource(android.R.color.holo_blue_bright);
 		
-		//Get current item
-		Item item = items.get(position);
-        nameText = (TextView) view.findViewById(R.id.item_name_row);
-        quantText = (TextView) view.findViewById(R.id.item_quant_row);
-        priceText = (TextView) view.findViewById(R.id.item_price_row);
-        purchasedChk = (CheckBox) view.findViewById(R.id.item_purchased_checkbox_row);
-        //purchasedSwitch = (Switch) view.findViewById(R.id.item_purchased_switch_row);
-        
-        //Fill fields
-        nameText.setText(item.getName());
-        quantText.setText(String.valueOf(item.getQuantity()));
-        priceText.setText(String.format("£%.2f",item.getPrice()));
-        purchasedChk.setChecked(item.getPurchasedBool());
-        
-        //purchasedSwitch.setChecked(item.getPurchasedBool());
-        
-        
+        if(Omniscient.isShopping())
+        {
+			//Get current item
+			Item item = items.get(position);
+	        nameText = (TextView) view.findViewById(R.id.item_name_row);
+	        quantText = (TextView) view.findViewById(R.id.item_quant_row);
+	        priceText = (TextView) view.findViewById(R.id.item_price_row);
+	        purchasedChk = (CheckBox) view.findViewById(R.id.item_purchased_checkbox_row);
+	        
+	        //Fill fields
+	        nameText.setText(item.getName());
+	        quantText.setText(String.valueOf(item.getQuantity()));
+	        priceText.setText(String.format("£%.2f",item.getPrice()));
+	        purchasedChk.setChecked(item.getPurchasedBool());
+	        
+	        purchasedChk.setOnClickListener(new View.OnClickListener()
+	        {
+				@Override
+				public void onClick(View v)
+		        {
+					boolean isChecked = ((CheckBox) v).isChecked();
+					//Get selected item
+					Item item = items.get(position);
+
+	       		   	if(item.getPurchasedBool() != isChecked)
+	       		   	{
+	       		   		item.setPurchased(isChecked == true ? 1 : 0);
+	       		   		boolean ret = DbAdapter.updateShopItem(item);
+	       		   		if(!ret)//If there was a problem, log it
+	       		   			Log.e(TAG, "CheckBox: item wasn't updated on DB! Name " + item.getName() + " Id " +item.getId());
+	       		   	}
+					//Update total cost
+					((ItemsMain) mContext).updateCost();
+		        }
+	        });
+        }
+        else
+        {
+			//Get current item
+			Item item = items.get(position);
+	        nameText = (TextView) view.findViewById(R.id.item_name_row);
+	        quantText = (TextView) view.findViewById(R.id.item_quant_row);
+	        //priceText = (TextView) view.findViewById(R.id.item_price_row);
+	        //purchasedChk = (CheckBox) view.findViewById(R.id.item_purchased_checkbox_row);
+	        
+	        //Fill fields
+	        nameText.setText(item.getName());
+	        quantText.setText(String.valueOf(item.getQuantity()));
+	        //priceText.setText(String.format("£%.2f",item.getPrice()));
+	        //purchasedChk.setChecked(item.getPurchasedBool());
+        }
+
         //Cross out item name if purchased
         /*if(purchasedSwitch.isChecked())
         	nameText.setPaintFlags(nameText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -94,35 +128,31 @@ public class MyAdapter extends ArrayAdapter<Item>
         view.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) 
             {
+            	//Get clicked item
             	Item item = items.get(position);
-            	CharSequence text = "Item " + item.getName() + "\n" + "Id " + item.getId() + "\nViewId " + v.getId();
+            	//Get preference 'auto remove'
+            	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+            	//TODO auto remove
+            	boolean autoRemove = sharedPref.getBoolean(SettingsActivity.KEY_AUTO_REMOVE, false);
+            	
+            	CharSequence text = "Auto remove pref: " + autoRemove;
+            	
+            	if(autoRemove)
+            	{
+            		//TODO auto remove
+            		//v.setVisibility(View.INVISIBLE);//DbAdapter.deleteReceiptItem(item.getId());
+            		//text = text + " INVISIBLE";
+            	}
+            	
             	int duration = Toast.LENGTH_SHORT;
             	Toast toast = Toast.makeText(mContext, text, duration);
-            	toast.show(); 
+            	toast.show();
+            	
+            	//Update displayed data
+            	((Update) mContext).updateDisplayedData();
             }
         });
 
-        //purchasedSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener()
-        purchasedChk.setOnClickListener(new View.OnClickListener()
-        {
-			@Override
-			public void onClick(View v)
-	        {
-				boolean isChecked = ((CheckBox) v).isChecked();
-				//Get selected item
-				Item item = items.get(position);
-
-       		   	if(item.getPurchasedBool() != isChecked)
-       		   	{
-       		   		item.setPurchased(isChecked == true ? 1 : 0);
-       		   		boolean ret = DbAdapter.updateShopItem(item);
-       		   		if(!ret)//If there was a problem, log it
-       		   			Log.e(TAG, "CheckBox: item wasn't updated on DB! Name " + item.getName() + " Id " +item.getId());
-       		   	}
-				//Update total cost
-				((ItemsMain) mContext).updateCost();
-	        }
-        });
         /*
         purchasedChk.setOnCheckedChangeListener(new OnCheckedChangeListener()
         {
@@ -151,5 +181,4 @@ public class MyAdapter extends ArrayAdapter<Item>
 	{		
 		return items.get(position).getId();
 	}
-
 }
