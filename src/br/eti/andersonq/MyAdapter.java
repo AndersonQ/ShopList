@@ -54,11 +54,17 @@ public class MyAdapter extends ArrayAdapter<Item>
 		TextView nameText;
 		TextView quantText;
 		TextView priceText;
+		TextView priceCompText;
 		CheckBox purchasedChk;
 	    View view = convertView;
 		
         if(Omniscient.isShopping())
         {
+        	float oldPrice;
+        	//Load preferences
+        	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+        	boolean compPrice = sharedPref.getBoolean(SettingsActivity.KEY_PRICE_COMPARISON, false);
+
     		if(view == null)
     		{
     			view = viewinf.inflate(R.layout.items_receipt_row, null);
@@ -74,6 +80,20 @@ public class MyAdapter extends ArrayAdapter<Item>
 	        quantText = (TextView) view.findViewById(R.id.item_quant_row);
 	        priceText = (TextView) view.findViewById(R.id.item_price_row);
 	        purchasedChk = (CheckBox) view.findViewById(R.id.item_purchased_checkbox_row);
+	        if(compPrice)
+	        {
+	        	priceCompText = (TextView) view.findViewById(R.id.item_price_comp_row);
+	        	oldPrice = DbAdapter.getLowestPrice(item.getName());
+	        	if(oldPrice >= 0)
+	        	{
+	        		priceCompText.setText(" / " + 
+	        				String.format("£%.2f", oldPrice));
+	        		if(Float.compare(item.getPrice(), oldPrice) > 0)
+	        			priceCompText.setTextColor(Color.GREEN);
+	        		else
+	        			priceCompText.setTextColor(Color.RED);
+	        	}
+	        }
 	        
 	        //Fill fields
 	        nameText.setText(item.getName());
@@ -132,8 +152,10 @@ public class MyAdapter extends ArrayAdapter<Item>
             	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
             	//TODO auto remove
             	boolean autoRemove = sharedPref.getBoolean(SettingsActivity.KEY_AUTO_REMOVE, false);
+            	boolean compPrice = sharedPref.getBoolean(SettingsActivity.KEY_PRICE_COMPARISON, false);
             	
-            	CharSequence text = "Auto remove pref: " + autoRemove;
+            	CharSequence text = "Auto remove pref: " + autoRemove + 
+            			"\ncompPrice = " + compPrice;
             	
             	if(autoRemove)
             	{

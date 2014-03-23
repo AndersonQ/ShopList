@@ -30,6 +30,7 @@ import android.preference.PreferenceManager;
 public class SettingsActivity extends PreferenceActivity 
 {
 	public static final String KEY_AUTO_REMOVE = "pref_auto_remove";
+	public static final String KEY_PRICE_COMPARISON = "pref_price_comparison";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

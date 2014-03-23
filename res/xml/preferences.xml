@@ -4,8 +4,15 @@
 	<SwitchPreference
 		android:defaultValue="false"
 		android:key="pref_auto_remove"
-		android:title="@string/pref_summary_auto_remove"
+		android:title="@string/pref_title_auto_remove"
 		android:summary="@string/pref_summary_auto_remove"
+		android:switchTextOn="YES"
+		android:switchTextOff="NO"/>
+	<SwitchPreference
+		android:defaultValue="false"
+		android:key="pref_price_comparison"
+		android:title="@string/pref_title_price_comparison"
+		android:summary="@string/pref_summary_price_comparison"
 		android:switchTextOn="YES"
 		android:switchTextOff="NO"/>
 

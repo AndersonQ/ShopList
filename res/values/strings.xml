@@ -63,17 +63,19 @@
     <!-- End Items Strings -->
 
 	<!-- Preferences -->
-	<string name="settings">Settings</string>
 	<!-- Titles -->
 	<string name="pref_title">Settings</string>
 	<string name="pref_title_auto_remove">Auto Remove</string>
+	<string name="pref_title_price_comparison">Price Comparison</string>
 	
 	<!-- Summaries -->
 	<string name="pref_summary_auto_remove">Auto remove purchased items</string>
+	<string name="pref_summary_price_comparison">Show whether last price of a item is higher or smaller than current price</string>
 	<!-- End preferences -->
 	
 
     <!-- Geral -->
+    <string name="settings">Settings</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
