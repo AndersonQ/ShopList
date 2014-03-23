@@ -14,6 +14,15 @@ public class Item {
 	public	float price;
 	public	int purchased;
 	
+	/**
+	 * 
+	 * @param id
+	 * @param listId
+	 * @param name
+	 * @param quantity
+	 * @param price
+	 * @param purchased
+	 */
 	public Item(long id, long listId, String name, int quantity, float price, int purchased)
 	{
 		this.id = id;
