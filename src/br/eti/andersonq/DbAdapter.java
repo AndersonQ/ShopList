@@ -414,6 +414,42 @@ public class DbAdapter
     	
     	return item;
     }
+    
+    /**
+     * Get a receipt item by its ID
+     * @param id, receipt item's id
+     * @return an Item object
+     */
+    public static Item getReceiptItem(long id)
+    {
+    	//Id of each correspondent column 
+    	int /*idxITEM_ID,*/ idxRECEIPT_ITEM_NAME, idxRECEIPT_ITEM_QUANTITY, idxRECEIPT_ITEM_PRICE, idxRECEIPT_ITEM_PURCHASED, idxRECEIPT_ITEM_LIST_ID;
+    	//Array to store all items of this list
+    	Item item = null;
+    	//Cursor to old list
+    	Cursor itemsCursor = mDb.query(true, RECEIPT_ITEMS_TABLE, new String[] {RECEIPT_ITEM_ID,
+    			RECEIPT_ITEM_NAME, RECEIPT_ITEM_QUANTITY, RECEIPT_ITEM_PRICE, RECEIPT_ITEM_PURCHASED, RECEIPT_ITEM_LIST_ID}, RECEIPT_ITEM_ID + "=" + id, null,
+                null, null, null, null);
+    	//Go to first item, if there isen't a first so there is no items at all
+    	if(itemsCursor.moveToFirst())
+    	{
+	    	//Get column index to each column
+	    	idxRECEIPT_ITEM_NAME = itemsCursor.getColumnIndex(RECEIPT_ITEM_NAME);
+	    	idxRECEIPT_ITEM_QUANTITY = itemsCursor.getColumnIndex(RECEIPT_ITEM_QUANTITY);
+	    	idxRECEIPT_ITEM_PRICE = itemsCursor.getColumnIndex(RECEIPT_ITEM_PRICE);
+	    	idxRECEIPT_ITEM_PURCHASED = itemsCursor.getColumnIndex(RECEIPT_ITEM_PURCHASED);
+	    	idxRECEIPT_ITEM_LIST_ID = itemsCursor.getColumnIndex(RECEIPT_ITEM_LIST_ID);
+    	
+    		String name = itemsCursor.getString(idxRECEIPT_ITEM_NAME);
+    		int quantity = itemsCursor.getInt(idxRECEIPT_ITEM_QUANTITY);
+    		float price = itemsCursor.getFloat(idxRECEIPT_ITEM_PRICE);
+    		int purchased = itemsCursor.getInt(idxRECEIPT_ITEM_PURCHASED);
+    		int receipt_listId = itemsCursor.getInt(idxRECEIPT_ITEM_LIST_ID);
+    		//Add fetched item in the array
+	    	item =  new Item(id, receipt_listId, name, quantity, price, purchased);
+    	}
+    	return item;
+    }
 
     /**
      * Update informations of a shop item
