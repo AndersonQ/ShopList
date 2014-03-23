@@ -565,6 +565,25 @@ public class DbAdapter
         				RECEIPT_ITEM_ID + " = " + (int)item.getId(), null) == 1;
     }
     
+	/**
+	 * Get the lowest price of a item by its name
+	 * @return the lowest price or -1
+	 */
+	public static float getLowestPrice(String itemName) 
+	{
+		Cursor c;
+		String query = "select min(" + RECEIPT_ITEM_PRICE + "), " + 
+								RECEIPT_ITEM_NAME +
+								" from " + RECEIPT_ITEMS_TABLE +
+								" where " + RECEIPT_ITEM_NAME + 
+								" like '" + itemName + "';";
+		c = mDb.rawQuery(query, null);
+		if (c.moveToFirst())
+			return c.getFloat(0);
+		else
+			return -1;
+	}
+    
     /*
      * ************************************************************************
      * ************************************************************************
