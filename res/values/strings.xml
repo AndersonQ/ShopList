@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Shop List</string>
+    <string name="app_name">--Shop List--</string>
 
     <!-- List -->
     <!-- List row -->
@@ -49,19 +49,29 @@
     <string name="item_price_hint">Item price</string>
 
     <!-- Menu TODO: replace with action bar -->
-    <string name="menu_item_insert">Add Item</string>
-    <string name="menu_item_delete">Delete Item</string>
-    <string name="menu_item_edit">Edit Item</string>
+    <string name="item_contextmenu_delete">Delete Item</string>
+    <string name="item_contextmenu_edit">Edit Item</string>
 
     <!-- Default values -->
     <string name="item_default_quant">1</string>
 
     <!-- Action Bar -->
-    <string name="item_action_list_price">Total Cost</string>
     <string name="item_action_add">New Item</string>
     <string name="item_action_choose_list">Choose List</string>
+    <string name="item_action_go_shopping">Start Shopping</string>
+    <string name="item_action_stop_shopping">Stop Shopping</string>
     <!-- End Items Strings -->
 
+	<!-- Preferences -->
+	<string name="settings">Settings</string>
+	<!-- Titles -->
+	<string name="pref_title">Settings</string>
+	<string name="pref_title_auto_remove">Auto Remove</string>
+	
+	<!-- Summaries -->
+	<string name="pref_summary_auto_remove">Auto remove purchased items</string>
+	<!-- End preferences -->
+	
 
     <!-- Geral -->
     <string name="confirm">Confirm</string>
@@ -70,8 +80,7 @@
     <string name="no">No</string>
     <!-- End Geral -->
 
-    <string name="action_search">action_search</string>
-    <string name="action_settings">action_settings</string>
+    
     <string name="title_activity_copy_list">Copy List</string>
     <string name="title_activity_list_copy">List Copy</string>
     <string name="title_activity_item_edit_frag">Edit Item</string>
