@@ -55,7 +55,7 @@ public class ListsMain extends ListActivity implements Update
         {	long listID;
         	
         	makeToast("No lists, creating default list");
-        	listID = DbAdapter.createList("default");
+        	listID = DbAdapter.createShopList("default");
         	DbAdapter.setCurrentShopListID((int)listID);
         	
         	//Reload rows from database

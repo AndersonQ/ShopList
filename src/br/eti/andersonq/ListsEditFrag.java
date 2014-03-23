@@ -121,7 +121,7 @@ public class ListsEditFrag extends DialogFragment {
 		
 		if (mId == -1)
 		{
-			long id = DbAdapter.createList(listName);
+			long id = DbAdapter.createShopList(listName);
 			if(id > 0)
 				mId = (int) id;
 		}
