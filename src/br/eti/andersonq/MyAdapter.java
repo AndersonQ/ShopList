@@ -99,7 +99,7 @@ public class MyAdapter extends ArrayAdapter<Item>
 	        nameText.setText(item.getName());
 	        quantText.setText(String.valueOf(item.getQuantity()));
 	        priceText.setText(String.format("£%.2f",item.getPrice()));
-	        purchasedChk.setChecked(item.getPurchasedBool());
+	        purchasedChk.setChecked(item.isPurchased());
 	        
 	        purchasedChk.setOnClickListener(new View.OnClickListener()
 	        {
@@ -110,7 +110,7 @@ public class MyAdapter extends ArrayAdapter<Item>
 					//Get selected item
 					Item item = items.get(position);
 
-	       		   	if(item.getPurchasedBool() != isChecked)
+	       		   	if(item.isPurchased() != isChecked)
 	       		   	{
 	       		   		item.setPurchased(isChecked == true ? 1 : 0);
 	       		   		boolean ret = DbAdapter.updateReceiptItem(item);

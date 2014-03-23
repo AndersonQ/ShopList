@@ -77,7 +77,7 @@ public class Item {
 		return purchased;
 	}
 	
-	public boolean getPurchasedBool() {
+	public boolean isPurchased() {
 		return purchased != 0 ? true : false;
 	}
 
