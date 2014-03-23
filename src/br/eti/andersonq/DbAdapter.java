@@ -97,7 +97,8 @@ public class DbAdapter
 	/*
 	 * SQL Create table statements
 	 */
-	private static final String DB_CREATE_ITEM_TABLE = "create table " + ITEMS_TABLE + " (" +
+	private static final String DB_CREATE_ITEM_TABLE = "create table " + 
+			ITEMS_TABLE + " (" +
 			ITEM_ID + " integer primary key autoincrement, " +
 			ITEM_NAME + " text not null, " +
 			ITEM_QUANTITY + " integer not null, " +
@@ -105,7 +106,8 @@ public class DbAdapter
 			ITEM_PRICE + " decimal, " +
 			ITEM_LIST_ID + " integer);";
 	
-	private static final String DB_CREATE_RECEIPT_ITEMS_TABLE = "create table " + RECEIPT_ITEMS_TABLE + " (" +
+	private static final String DB_CREATE_RECEIPT_ITEMS_TABLE = "create table "+ 
+			RECEIPT_ITEMS_TABLE + " (" +
 			RECEIPT_ITEM_ID + " integer primary key autoincrement, " +
 			RECEIPT_ITEM_NAME + " text not null, " +
 			RECEIPT_ITEM_QUANTITY + " integer not null, " +
@@ -113,12 +115,14 @@ public class DbAdapter
 			RECEIPT_ITEM_PRICE + " decimal, " +
 			RECEIPT_ITEM_LIST_ID + " integer);";
 	
-	public static final String DB_CREATE_SHOPLIST_TABLE = "create table " + LISTS_TABLE + " (" +
+	public static final String DB_CREATE_SHOPLIST_TABLE = "create table " + 
+			LISTS_TABLE + " (" +
 			LIST_ID + " integer primary key autoincrement, " +
 			LIST_NAME + " text not null, " + 
 			LIST_TIMESTAMP + " timestamp not null default current_timestamp);";
 	
-	public static final String DB_CREATE_RECEIPT_TABLE = "create table " + RECEIPT_LIST_TABLE + " (" +
+	public static final String DB_CREATE_RECEIPT_TABLE = "create table " + 
+			RECEIPT_LIST_TABLE + " (" +
 			RECEIPT_LIST_ID + " integer primary key autoincrement, " +
 			RECEIPT_LIST_NAME + " text not null, " + 
 			RECEIPT_LIST_TIMESTAMP + " timestamp not null default current_timestamp);";
@@ -210,7 +214,12 @@ public class DbAdapter
      * @param listId if of the item's list
      * @return new item ID
      */
-    public static long createShopItem(String itemName, int itemQuant, float price, int purchased, int listId) {
+    public static long createShopItem(	String itemName, 
+    									int itemQuant, 
+    									float price, 
+    									int purchased, 
+    									int listId) 
+    {
         ContentValues initialValues = new ContentValues();
         initialValues.put(ITEM_NAME, itemName);
         initialValues.put(ITEM_QUANTITY, itemQuant);
@@ -248,7 +257,11 @@ public class DbAdapter
      * @param receiptListId if of the item's list
      * @return new item ID
      */
-    public static long createReceiptItem(String itemName, int itemQuant, float price, int purchased, long receiptListId) 
+    public static long createReceiptItem(	String itemName, 
+    										int itemQuant, 
+    										float price, 
+    										int purchased, 
+    										long receiptListId) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(RECEIPT_ITEM_NAME, itemName);
@@ -278,7 +291,7 @@ public class DbAdapter
      */
     public static boolean deleteReceiptItem(long id) 
     {
-        return mDb.delete(RECEIPT_ITEMS_TABLE, RECEIPT_ITEM_LIST_ID + "=" + id, null) == 1;
+        return mDb.delete(RECEIPT_ITEMS_TABLE, RECEIPT_ITEM_ID + "=" + id, null) == 1;
     }
 
     public static Cursor fetchAllItem() {
@@ -383,7 +396,7 @@ public class DbAdapter
      * @param id item's id
      * @return an object Item
      */
-    public static Item getItem(long id)
+    public static Item getShopItem(long id)
     {
     	//Id of each correspondent column 
     	int /*idxITEM_ID,*/ idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED, idxITEM_LIST_ID;
@@ -460,7 +473,12 @@ public class DbAdapter
      * @param purchased if the item was purchased (0-false, 1-true)
      * @return true success, false fail
      */
-    public static boolean updateShopItem(long id, String name, int quant, float price, int purchased) {
+    public static boolean updateShopItem(	long id, 
+    										String name, 
+    										int quant, 
+    										float price, 
+    										int purchased)
+    {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, name);
         args.put(ITEM_QUANTITY, quant);
@@ -479,7 +497,10 @@ public class DbAdapter
      * @param price item price
      * @return true success, false fail
      */
-    public static boolean updateShopItem(long id, String name, int quant, float price) 
+    public static boolean updateShopItem(	long id, 
+    										String name, 
+    										int quant, 
+    										float price) 
     {
         ContentValues args = new ContentValues();
         args.put(ITEM_NAME, name);
@@ -518,7 +539,8 @@ public class DbAdapter
         args.put(RECEIPT_ITEM_PRICE, item.getPrice());
         args.put(RECEIPT_ITEM_PURCHASED, item.getPurchased());
 
-        return mDb.update(ITEMS_TABLE, args, ITEM_ID + "=" + item.getId(), null) == 1;
+        return mDb.update(RECEIPT_ITEMS_TABLE, args, 
+        				RECEIPT_ITEM_ID + " = " + item.getId(), null) == 1;
     }
     
     /*
