@@ -32,10 +32,8 @@ public class ItemsMain extends Activity implements Update
     private static final String TAG = "ItemsMain";
 	
     private static final int ACTIVITY_LIST_MAIN = 4;
-
-    private static final int ITEM_DELETE_ID = Menu.FIRST;
-    private static final int ITEM_EDIT_ID = Menu.FIRST + 1;
-	
+    
+    private static MenuItem mStartShopping, mStopShopping;
     
     /*
      * ************************************************************************
@@ -86,13 +84,33 @@ public class ItemsMain extends Activity implements Update
         PreferenceManager.setDefaultValues(app, R.xml.preferences, false);        
     }
 
+    /**
+     * Create action bar menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) 
     {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.item_action_bar, menu);
-         
+        
+        //Keep a reference to start/stop shopping
+        mStartShopping = menu.findItem(R.id.item_action_go_shopping);
+        mStopShopping = menu.findItem(R.id.item_action_stop_shopping);
+        
+        if(Omniscient.isShopping())
+        {
+    		mStartShopping.setVisible(false);
+    		mStopShopping.setVisible(true);
+
+        }
+        else
+        {
+    		mStartShopping.setVisible(true);
+    		mStopShopping.setVisible(false);
+
+        }
+        
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -147,6 +165,9 @@ public class ItemsMain extends Activity implements Update
         return false;
     }
 
+    /**
+     * Create context menu
+     */
 	@Override
     public void onCreateContextMenu(ContextMenu menu, View v,
             ContextMenuInfo menuInfo) 
@@ -286,6 +307,9 @@ public class ItemsMain extends Activity implements Update
 		//Update total cost
 		updateCost();
 		
+		mStartShopping.setVisible(false);
+		mStopShopping.setVisible(true);
+		
 		/* 
 		 * TODO
 		 * auto-remove option
@@ -306,6 +330,9 @@ public class ItemsMain extends Activity implements Update
     	//Make text related to cost views invisible
 		pricetxt.setVisibility(View.INVISIBLE);
 		price.setVisibility(View.INVISIBLE);
+		
+		mStartShopping.setVisible(true);
+		mStopShopping.setVisible(false);
 		
 		//Fill activity
 		fillData();
