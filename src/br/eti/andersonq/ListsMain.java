@@ -19,7 +19,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class ListsMain extends ListActivity //implements Update
+public class ListsMain extends ListActivity implements Update
 {
 	//Tag to debug
 	private static final String TAG = "ListsMain";
@@ -115,7 +115,9 @@ public class ListsMain extends ListActivity //implements Update
         switch(item.getItemId()) 
         {
             case DELETE_ID:
-            	DbAdapter.deleteList(id);
+            	boolean ret = DbAdapter.deleteList(id);
+            	if(!ret)
+            		Log.e(TAG, "onContextItemSelected(): Error: list wasn't deleted from DB");
                 fillData();
                 return true;
             case EDIT_ID:
@@ -142,6 +144,12 @@ public class ListsMain extends ListActivity //implements Update
         super.onActivityResult(requestCode, resultCode, intent);
         fillData();
     }
+    
+	/* (non-Javadoc)
+	 * @see br.eti.andersonq.Update#updateCost()
+	 */
+	@Override
+	public void updateCost() {}
 
     /*
 	@Override
@@ -173,13 +181,11 @@ public class ListsMain extends ListActivity //implements Update
 		super.onDestroy();
 	}*/
 
-    /*
 	@Override
 	public void updateDisplayedData() 
 	{
 		fillData();
 	}
-	*/
 	
     private void editList(long id)
     {
@@ -228,4 +234,5 @@ public class ListsMain extends ListActivity //implements Update
         
         startActivityForResult(i, ACTIVITY_EDIT);
     }
+
 }
