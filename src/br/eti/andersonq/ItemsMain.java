@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -216,16 +217,32 @@ public class ItemsMain extends Activity implements Update
     {
     	if(Omniscient.isShopping())
     	{
+        	//Load auto-remove preferences
+        	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        	boolean autoRemove = sharedPref.getBoolean(SettingsActivity.KEY_AUTO_REMOVE, false);
+        	
     		ArrayList<Item> items = DbAdapter.getAllReceiptItems();
+    		ArrayList<Item> ditems = new ArrayList<Item>();
+    		Log.d(TAG, "fillData():");
+    		Log.d(TAG, "autoRemove: " + autoRemove);
+    		if(autoRemove)
+    		{
+    			for(Item item : items)
+    			{
+    				if(item.isPurchased())
+    					ditems.add(item);
+    			}
+    		}
 	    	ListView listView = (ListView) findViewById(R.id.items_list_view);
 	        MyAdapter adapter = new MyAdapter(this, 
 	        								R.layout.items_list, 
-	        								items);
+	        								ditems);
 			listView.setAdapter(adapter);
 			listView.setClickable(true);
     	}
     	else
     	{
+    		
 	    	ListView listView = (ListView) findViewById(R.id.items_list_view);
 	        MyAdapter adapter = new MyAdapter(this, 
 	        								R.layout.items_list, 
