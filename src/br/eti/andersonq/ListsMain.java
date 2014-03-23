@@ -47,7 +47,7 @@ public class ListsMain extends ListActivity implements Update
     private void fillData() 
     {
         // Get all of the rows from the database and create the item list
-    	Cursor listCursor = DbAdapter.fetchAllLists();
+    	Cursor listCursor = DbAdapter.fetchAllShopLists();
         startManagingCursor(listCursor);
         
         //If there is no list, creates a default one
@@ -59,7 +59,7 @@ public class ListsMain extends ListActivity implements Update
         	DbAdapter.setCurrentShopListID((int)listID);
         	
         	//Reload rows from database
-        	listCursor = DbAdapter.fetchAllLists();
+        	listCursor = DbAdapter.fetchAllShopLists();
             startManagingCursor(listCursor);
         }
 

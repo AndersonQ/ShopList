@@ -103,7 +103,7 @@ public class ListsEditFrag extends DialogFragment {
 		//If it is creating a new item there is no information to populate fields
 		if(mId != -1)
 		{
-			Cursor note = DbAdapter.fetchList(mId);
+			Cursor note = DbAdapter.fetchShopList(mId);
 			getActivity().startManagingCursor(note);
 			
 			//Set activity title
@@ -127,7 +127,7 @@ public class ListsEditFrag extends DialogFragment {
 		}
 		else
 		{
-			DbAdapter.updateList(mId, listName);
+			DbAdapter.updateShopList(mId, listName);
 		}
 	}
 
