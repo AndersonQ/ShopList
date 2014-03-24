@@ -47,6 +47,7 @@ public class ItemsMain extends Activity implements Update
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
+        MyAdapter adapter;
         Application app = getApplication();
         Omniscient.setApp(app);
         setContentView(R.layout.items_list);
@@ -56,28 +57,43 @@ public class ItemsMain extends Activity implements Update
         ab.setSubtitle(DbAdapter.getShopListName(DbAdapter.getCurrentShopListID()));
 
         //Fill data
+        /*
     	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
     	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
-    	price.setText(String.format("%.2f",listCost()));
+    	price.setText(String.format("%.2f",listCost()));*/
+    	
+    	ListView listView = (ListView) findViewById(R.id.items_list_view);
+    	/*ArrayList<Item> items = null;
     	if(Omniscient.isShopping())
     	{
-    		pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    		items = DbAdapter.getAllReceiptItems();
+    		Log.d(TAG, "onCreate");
+    		Log.d(TAG, "current RECEIPT list:" + DbAdapter.getCurrentReceiptListID());
+    		for(Item i : items)
+    			Log.d(TAG, "item: " + i.getName());
+            adapter = new MyAdapter(this, 
+					R.layout.items_list, 
+					items);
     		pricetxt.setVisibility(View.VISIBLE);
     		price.setVisibility(View.VISIBLE);
     	}
     	else
     	{
-    		pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    		items = DbAdapter.getAllShopItems();
+    		Log.d(TAG, "onCreate");
+    		Log.d(TAG, "current SHOP list: " + DbAdapter.getCurrentShopListID());
+    		for(Item i : items)
+    			Log.d(TAG, "item: " + i.getName());
+            adapter = new MyAdapter(this, 
+					R.layout.items_list, 
+					items);
     		pricetxt.setVisibility(View.INVISIBLE);
     		price.setVisibility(View.INVISIBLE);	
     	}
     	
-        ListView listView = (ListView) findViewById(R.id.items_list_view);
-        MyAdapter adapter = new MyAdapter(this, 
-        								R.layout.items_list, 
-        								DbAdapter.getAllShopItems());
 		listView.setAdapter(adapter);
-		listView.setClickable(true);
+		listView.setClickable(true);*/
+    	fillData();
 		
         registerForContextMenu(listView);
         
@@ -103,13 +119,11 @@ public class ItemsMain extends Activity implements Update
         {
     		mStartShopping.setVisible(false);
     		mStopShopping.setVisible(true);
-
         }
         else
         {
     		mStartShopping.setVisible(true);
     		mStopShopping.setVisible(false);
-
         }
         
         return super.onCreateOptionsMenu(menu);
@@ -140,6 +154,7 @@ public class ItemsMain extends Activity implements Update
         		startActivity(new Intent(this, SettingsActivity.class));
         		return true;
         	case R.id.item_contextmenu_edit:
+        		//Log.d(TAG, "onMenuItemSelected: editItem, id: " + info.id);
         		editItem(info.id);
             	return true;
         	case R.id.item_contextmenu_delete:
@@ -197,56 +212,120 @@ public class ItemsMain extends Activity implements Update
     /*
      * ************************************************************************
      * ************************************************************************
-     * My methods
+     * My methods, Update interface methods
      * ************************************************************************
      * ************************************************************************
      */
 	
+    @Override
+    public void updateCost()
+    {
+    	//Get textViews
+    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    	//Set new total cost
+    	price.setText(String.format("%.2f", listCost()));
+    	//Make text views visible
+		pricetxt.setVisibility(View.VISIBLE);
+		price.setVisibility(View.VISIBLE);
+    }
+	
 	@Override
 	public void updateDisplayedData() 
 	{
+		//Log.d(TAG, "updateDisplayedData()");
 		if(Omniscient.isShopping())
 			updateCost();
 		fillData();
 	}
+	
+    /*
+     * ************************************************************************
+     * ************************************************************************
+     * My methods
+     * ************************************************************************
+     * ************************************************************************
+     */
 	
 	/**
 	 * Fill the activity with the current items list
 	 */
     private void fillData() 
     {
+    	ArrayList<Item> items = null;
+    	ListView listView = (ListView) findViewById(R.id.items_list_view);
+    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    	
+    	//Log.d(TAG, "fillData():");
     	if(Omniscient.isShopping())
     	{
+    		ArrayList<Item> ditems = new ArrayList<Item>();
         	//Load auto-remove preferences
         	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         	boolean autoRemove = sharedPref.getBoolean(SettingsActivity.KEY_AUTO_REMOVE, false);
         	
-    		ArrayList<Item> items = DbAdapter.getAllReceiptItems();
-    		ArrayList<Item> ditems = new ArrayList<Item>();
-    		Log.d(TAG, "fillData():");
-    		Log.d(TAG, "autoRemove: " + autoRemove);
+        	//Get items to display
+    		items = DbAdapter.getAllReceiptItems();
+    		
+    		price.setText(String.format("%.2f",listCost()));
+    		pricetxt.setVisibility(View.VISIBLE);
+    		price.setVisibility(View.VISIBLE);
+    		
+        	/*Log.d(TAG, "currentReceiptList: " + DbAdapter.getCurrentReceiptListID());
+    		Log.d(TAG, "autoRemove: " + autoRemove);*/
+    		
     		if(autoRemove)
     		{
     			for(Item item : items)
     			{
-    				if(item.isPurchased())
+    				if(!item.isPurchased())
     					ditems.add(item);
     			}
+    			
+    			/*Log.d(TAG, "Items do display:");
+    			for(Item i : ditems)
+    				Log.d(TAG, "Item: " + i.getName() + " price: " + i.getPrice());*/
+    			
+    	    	listView = (ListView) findViewById(R.id.items_list_view);
+    	        MyAdapter adapter = new MyAdapter(this, 
+    	        								R.layout.items_list, 
+    	        								ditems);
+    			listView.setAdapter(adapter);
+    			listView.setClickable(true);
     		}
-	    	ListView listView = (ListView) findViewById(R.id.items_list_view);
-	        MyAdapter adapter = new MyAdapter(this, 
-	        								R.layout.items_list, 
-	        								ditems);
-			listView.setAdapter(adapter);
-			listView.setClickable(true);
+    		else
+    		{
+    			items = DbAdapter.getAllReceiptItems();
+    			
+    			/*Log.d(TAG, "Items do display:");
+    			for(Item i : items)
+    				Log.d(TAG, "Item: " + i.getName() + " price: " + i.getPrice());*/
+    			
+		    	listView = (ListView) findViewById(R.id.items_list_view);
+		        MyAdapter adapter = new MyAdapter(this, 
+		        								R.layout.items_list, 
+		        								items);
+				listView.setAdapter(adapter);
+				listView.setClickable(true);
+    		}
     	}
     	else
     	{
+    		items = DbAdapter.getAllShopItems();
     		
-	    	ListView listView = (ListView) findViewById(R.id.items_list_view);
+    		pricetxt.setVisibility(View.INVISIBLE);
+    		price.setVisibility(View.INVISIBLE);
+    		
+    		/*Log.d(TAG, "currentShopList: " + DbAdapter.getCurrentShopListID());
+			Log.d(TAG, "Items do display:");
+			for(Item i : items)
+				Log.d(TAG, "Item: " + i.getName() + " price: " + i.getPrice());*/
+			
+	    	listView = (ListView) findViewById(R.id.items_list_view);
 	        MyAdapter adapter = new MyAdapter(this, 
 	        								R.layout.items_list, 
-	        								DbAdapter.getAllShopItems());
+	        								items);
 			listView.setAdapter(adapter);
 			listView.setClickable(true);
     	}
@@ -263,6 +342,14 @@ public class ItemsMain extends Activity implements Update
     	ItemEditFrag fire = new ItemEditFrag();
     	FragmentManager manager = getFragmentManager();
     	Omniscient.setCurrentItemID(id);
+    	/*Log.d(TAG, "editItem");
+    	Log.d(TAG, "item id: " + id);*/
+    	
+    	/*if(Omniscient.isShopping())
+    		DbAdapter.setCurrentReceiptListID((int)id);
+    	else
+    		DbAdapter.setCurrentShopListID((int)id);*/
+    	//Log.d(TAG, "firing Fragment");
     	fire.show(manager, "FRAGMENT");
     }
 
@@ -298,12 +385,26 @@ public class ItemsMain extends Activity implements Update
 	{
 		//Set shopping true
 		Omniscient.setShopping(true);
+		
+    	//Get textViews
+    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
+    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
+    	//Make text related to cost views invisible
+		pricetxt.setVisibility(View.VISIBLE);
+		price.setVisibility(View.VISIBLE);
+		
 		//Try to get RecipList associated with current shop list
 		long receiptListId = DbAdapter.getReceiptListFromShopList();
+		
+		/*Log.d(TAG,  "startShopping");
+		Log.d(TAG, "currentShopList: " + DbAdapter.getCurrentShopListID());
+		Log.d(TAG, "DbAdapter.getReceiptListFromShopList(): " + receiptListId);*/
+		
 		if(receiptListId == 0)//No associated receiptList
 		{
 			//Create receipt list from current shop list
 			receiptListId = DbAdapter.createReceiptList();
+			//Log.d(TAG, "new receipt list id: " + receiptListId);
 			//Set shopList foreign key to new receipt list
 			DbAdapter.setShopListReceiptList(
 							DbAdapter.getCurrentShopListID(), 
@@ -318,19 +419,16 @@ public class ItemsMain extends Activity implements Update
 		
 		//Set current receiptList	
 		DbAdapter.setCurrentReceiptListID((int) receiptListId);
-		
-		//Fill activity
-		fillData();
-		//Update total cost
-		updateCost();
+		//Log.d(TAG, "DbAdapter.setCurrentReceiptListID: " + receiptListId);
+		//Log.d(TAG, "DbAdapter.getCurrentReceiptListID(): " + DbAdapter.getCurrentReceiptListID());
 		
 		mStartShopping.setVisible(false);
 		mStopShopping.setVisible(true);
 		
-		/* 
-		 * TODO
-		 * auto-remove option
-		 * */
+		//Update total cost
+		updateCost();
+		//Fill activity
+		fillData();
 	}
 	
     /**
@@ -354,25 +452,4 @@ public class ItemsMain extends Activity implements Update
 		//Fill activity
 		fillData();
 	}
-    
-    /*
-     * ************************************************************************
-     * ************************************************************************
-     * My methods, Update interface methods
-     * ************************************************************************
-     * ************************************************************************
-     */
-	
-    @Override
-    public void updateCost()
-    {
-    	//Get textViews
-    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
-    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
-    	//Set new total cost
-    	price.setText(String.format("%.2f", listCost()));
-    	//Make text views visible
-		pricetxt.setVisibility(View.VISIBLE);
-		price.setVisibility(View.VISIBLE);
-    }
 }
