@@ -135,11 +135,11 @@ public class ListsMain extends ListActivity implements Update
         super.onListItemClick(l, v, position, id);
 
         //TODO: show selected list name
-        makeToast("List " + DbAdapter.getShopListName(id) + " " + id + " selected");
+        makeToast("List " + DbAdapter.getShopListName(id) + " selected");
         startItemMainActivity(id);
-        Log.d(TAG, "onListItemClick");
+        /*Log.d(TAG, "onListItemClick");
         Log.d(TAG, "current ShopList: " + DbAdapter.getCurrentReceiptListID());
-        Log.d(TAG, "current ID: " + id);
+        Log.d(TAG, "current ID: " + id);*/
     }
 
     @Override
@@ -236,8 +236,8 @@ public class ListsMain extends ListActivity implements Update
         
         int tmp = (int) id;
         DbAdapter.setCurrentShopListID(tmp);
-        Log.d(TAG, "startItemMainActivity");
-        Log.d(TAG, "id: " + id + " currentShopListId: " + DbAdapter.getCurrentShopListID());
+        /*Log.d(TAG, "startItemMainActivity");
+        Log.d(TAG, "id: " + id + " currentShopListId: " + DbAdapter.getCurrentShopListID());*/
         startActivityForResult(i, ACTIVITY_EDIT);
     }
 
