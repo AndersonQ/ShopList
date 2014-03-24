@@ -61,8 +61,9 @@ public class ItemsMain extends Activity implements Update
         //Get a shopList when app starts
         if(started == false)
         {
+        	started = true;
         	currentShopListId = DbAdapter.getFirstShopList();
-        	DbAdapter.setCurrentShopListID((int) currentShopListId);	
+        	DbAdapter.setCurrentShopListID((int) currentShopListId);
         }
 
         ab.setSubtitle(DbAdapter.getShopListName(DbAdapter.getCurrentShopListID()));
