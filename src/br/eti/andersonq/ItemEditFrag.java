@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,6 +40,9 @@ public class ItemEditFrag extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         
         mId = Omniscient.getCurrentItemID();
+        /*Log.d(TAG, "onCreateDialog");
+        Log.d(TAG, "getCurrentItemID:" + mId);*/
+        
         if(mId == -1)//Create Item
         {
 	        //Inflate layout
@@ -46,7 +50,7 @@ public class ItemEditFrag extends DialogFragment {
 	        //Set layout view
 	        builder.setView(myInflatedViewl);
 	        //Set title to Create Item or Edit Item
-	        builder.setMessage(R.string.item_create);
+	        builder.setTitle(R.string.item_create);
         }
         else //Edit Item
         {
@@ -55,12 +59,14 @@ public class ItemEditFrag extends DialogFragment {
 	        //Set layout view
 	        builder.setView(myInflatedViewl);
 	        //Set title to Create Item or Edit Item
-	        builder.setMessage(R.string.item_edit);
+	        builder.setTitle(R.string.item_edit);
         }
         
         builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                    	saveState();
+                   	/*Log.d(TAG, "ConfirmButton()");
+                   	Log.d(TAG, "calling mUpdate.updateDisplayedData");*/
                    	mUpdate.updateDisplayedData();
                    }
                })
@@ -118,6 +124,8 @@ public class ItemEditFrag extends DialogFragment {
 		//If it is creating a new item there is no information to populate fields
 		if(mId != -1)
 		{
+			/*Log.d(TAG, "populateFields");
+			Log.d(TAG, "mId: " + mId);*/
 			Item item;
 			//Get shop Item or receipt item depending if isShopping or not
 			item = Omniscient.isShopping() 	?	DbAdapter.getReceiptItem(mId) :
@@ -130,18 +138,48 @@ public class ItemEditFrag extends DialogFragment {
 
 	private void saveState() 
 	{
+		/*Log.d(TAG, "saveState");
+		Log.d(TAG, "itemID: " + mId);*/
+		//Get name
 		String name = mNameText.getText().toString();
-		int quant = Integer.parseInt(mQuantText.getText().toString());
-		
+		//Validate field
+		if(name.length() == 0)
+		{
+			alerttMsg();
+			return;
+		}
+		//Get quantity
+		String squant = mQuantText.getText().toString();
+		//Validate field
+		if(squant.length() == 0)
+		{
+			alerttMsg();
+			return;
+		}
+		int quant = Integer.parseInt(squant);
+
 		if (mId == -1)//Creating Item
 		{
+			if(Omniscient.isShopping())//Create item in both lists
+			{
+				DbAdapter.createReceiptItem(name, quant, 0, 0,
+						DbAdapter.getCurrentReceiptListID());
+				DbAdapter.createShopItem(name, quant, 0, 0, 
+						DbAdapter.getCurrentShopListID());
+			}
+			else
+			{
+				DbAdapter.createShopItem(name, quant, 0, 0, 
+						DbAdapter.getCurrentShopListID());
+			}
+			/*
 				long id = Omniscient.isShopping() ? 
 						DbAdapter.createReceiptItem(name, quant, 0, 0, 
 								DbAdapter.getCurrentReceiptListID()) :
 						DbAdapter.createShopItem(name, quant, 0, 0, 
 								DbAdapter.getCurrentShopListID());
 			if(id > 0)
-				mId = (int) id;
+				mId = (int) id;*/
 		}
 		else//Editing Item
 		{
@@ -149,8 +187,19 @@ public class ItemEditFrag extends DialogFragment {
 			{
 				//Get item
 				Item item = DbAdapter.getReceiptItem(mId);
-				//Set new price
-				item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
+				//Set name
+				item.setName(name);
+				//Set quantity
+				item.setQuantity(quant);
+				String sprice = mPriceText.getText().toString();
+				//Log.d(TAG, "itemPrice: " + Float.parseFloat(sprice));
+				if(sprice.length() == 0)
+				{
+					alerttMsg();
+					return;
+				}
+				//Set price
+				item.setPrice(Float.parseFloat(sprice));
 				//Save on DB
 				boolean ret = DbAdapter.updateReceiptItem(item);
 				if(!ret) //If there was a problem, log it
@@ -160,6 +209,10 @@ public class ItemEditFrag extends DialogFragment {
 			{
 				//Get item
 				Item item = DbAdapter.getShopItem(mId);
+				//Set name
+				item.setName(name);
+				//Set quantity
+				item.setQuantity(quant);
 				//Set new price
 				item.setPrice(Float.parseFloat(mPriceText.getText().toString()));
 				//Save on DB
@@ -168,5 +221,15 @@ public class ItemEditFrag extends DialogFragment {
 					Log.e(TAG, "saveState(): Error: Shop item wasn't saved in DB");
 			}
 		}
+	}
+	
+	private void alerttMsg()
+	{
+		Activity act = getActivity();
+		AlertDialog.Builder builder = new AlertDialog.Builder(act);
+		builder.setTitle(R.string.error_title);
+		builder.setMessage(R.string.error_empty_msg);
+		builder.setNegativeButton(R.string.got_ti_msg, null);
+		builder.create().show();
 	}
 }
