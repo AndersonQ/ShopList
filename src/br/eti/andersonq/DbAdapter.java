@@ -115,7 +115,7 @@ public class DbAdapter
 			RECEIPT_ITEM_QUANTITY + " integer not null, " +
 			RECEIPT_ITEM_PURCHASED + " integer not null, " +
 			RECEIPT_ITEM_PRICE + " decimal, " +
-			RECEIPT_ITEM_LIST_ID + " integer);";
+			RECEIPT_ITEM_LIST_ID + " integer not null);";
 	
 	public static final String DB_CREATE_SHOPLIST_TABLE = "create table " + 
 			LISTS_TABLE + " (" +
@@ -555,14 +555,26 @@ public class DbAdapter
      */
     public static boolean updateReceiptItem(Item item)
     {
+    	/*Log.d(TAG, "updateReceiptItem");
+    	Log.d(TAG, "ItemID: " + item.getId());
+    	Log.d(TAG, "itemPrice: " + item.getPrice());
+    	Log.d(TAG, "itemListDI: " + item.getListId());*/
         ContentValues args = new ContentValues();
         args.put(RECEIPT_ITEM_NAME, item.getName());
         args.put(RECEIPT_ITEM_QUANTITY, item.getQuantity());
         args.put(RECEIPT_ITEM_PRICE, item.getPrice());
         args.put(RECEIPT_ITEM_PURCHASED, item.getPurchased());
+        args.put(RECEIPT_ITEM_LIST_ID, item.getListId());
 
-        return mDb.update(RECEIPT_ITEMS_TABLE, args, 
-        				RECEIPT_ITEM_ID + " = " + (int)item.getId(), null) == 1;
+        int ret = mDb.update(RECEIPT_ITEMS_TABLE, args, 
+				RECEIPT_ITEM_ID + " = " + (int)item.getId(), null);
+        /*
+        //DEBUG
+        Item it = DbAdapter.getReceiptItem(item.getId());
+        Log.d(TAG, "price updated: " + it.getPrice());
+        Log.d(TAG, "itemListDI updated: " + it.getListId());*/
+        
+        return  ret == 1;
     }
     
 	/**
@@ -582,6 +594,37 @@ public class DbAdapter
 			return c.getFloat(0);
 		else
 			return -1;
+	}
+	
+	public static ArrayList<Item> getPrices(String itemName) 
+	{
+		int idxRECEIPT_ITEM_PRICE, idxRECEIPT_ITEM_ID;
+		ArrayList<Item> items = null;
+		Cursor c;
+		String query = "select " + RECEIPT_ITEM_PRICE + ", " + 
+								RECEIPT_ITEM_NAME + ", " +
+								RECEIPT_ITEM_ID +
+								" from " + RECEIPT_ITEMS_TABLE +
+								" where " + RECEIPT_ITEM_NAME + 
+								" like '" + itemName + "';";
+		c = mDb.rawQuery(query, null);
+		if (c.moveToFirst())
+		{
+			items = new ArrayList<Item>();
+			idxRECEIPT_ITEM_PRICE = c.getColumnIndexOrThrow(RECEIPT_ITEM_PRICE);
+			idxRECEIPT_ITEM_ID = c.getColumnIndexOrThrow(RECEIPT_ITEM_ID);
+			
+			do
+			{
+				items.add(new Item(c.getLong(idxRECEIPT_ITEM_ID), 
+									0,
+									"get_price_" + itemName, 
+									0, 
+									c.getFloat(idxRECEIPT_ITEM_PRICE), 
+									0));
+			}while(c.moveToNext());
+		}
+			return items;
 	}
     
     /*
@@ -617,29 +660,45 @@ public class DbAdapter
     
     public static long copyList(long oldListID, String newListName)
     {
-    	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
+    	//int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
     	//Cursor to old list
-    	Cursor oldList = mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
-                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) oldListID, null, null, null, null);
+    	/*Cursor oldList = mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
+                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) oldListID, null, null, null, null);*/
+    	int tmp = DbAdapter.currentShopListID;
+    	DbAdapter.currentShopListID = (int) oldListID;
+    	ArrayList<Item> items = DbAdapter.getAllShopItems();
+    	DbAdapter.currentShopListID = tmp;
 
+    	/*
     	//Get column index to each column
     	idxITEM_NAME = oldList.getColumnIndex(ITEM_NAME);
     	idxITEM_QUANTITY = oldList.getColumnIndex(ITEM_QUANTITY);
     	idxITEM_PRICE = oldList.getColumnIndex(ITEM_PRICE);
     	idxITEM_PURCHASED = oldList.getColumnIndex(ITEM_PURCHASED);
-    	
+    	*/
     	//Create new list
     	long newListID = createShopList(newListName);
+    	//Log.d(TAG, "copyList:");
+    	//Log.d(TAG, "oldListID: " + oldListID + " newListID: " + newListID);
     	
     	//Go to first item
-    	oldList.moveToFirst();
-    	do{
-    		createShopItem(oldList.getString(idxITEM_NAME), 
-    				oldList.getInt(idxITEM_QUANTITY),
-    				oldList.getFloat(idxITEM_PRICE),
-    				oldList.getInt(idxITEM_PURCHASED), 
-    				(int)newListID );
-    	}while (oldList.moveToNext());
+    	/*
+    	if(oldList.moveToFirst())
+    	{
+	    	do{
+	    		createShopItem(oldList.getString(idxITEM_NAME), 
+	    				oldList.getInt(idxITEM_QUANTITY),
+	    				oldList.getFloat(idxITEM_PRICE),
+	    				oldList.getInt(idxITEM_PURCHASED), 
+	    				(int)newListID );
+	    	}while (oldList.moveToNext());
+    	}*/
+    	for(Item it : items)
+    	{
+    		it.setListId(newListID);
+    		DbAdapter.createShopItem(it.getName(), it.getQuantity(), it.getPrice(), it.getPurchased(), (int) it.getListId());
+    		//Log.d(TAG, "copying: " + it.getName());
+    	}
     	
     	return newListID;
     }
@@ -654,7 +713,9 @@ public class DbAdapter
     	int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
     	String shopListName = getShopListName(shopListId);
 		ContentValues value = new ContentValues();
-		
+		//Log.d(TAG, "createReceiptList");
+		//Log.d(TAG, "ShopListID: " + shopListId);
+		//Log.d(TAG, "ShopListName: " + shopListName);
 		//Create new receipt list with the same name as shop list
 		value.put(RECEIPT_LIST_NAME, shopListName);
 		long reciptListID =  mDb.insert(RECEIPT_LIST_TABLE, null, value);
@@ -767,6 +828,8 @@ public class DbAdapter
      */
     public static String getShopListName(long id)
     {
+    /*	Log.d(TAG, "getShopListName");
+    	Log.d(TAG, "listID: " + id);*/
     	Cursor cursor = mDb.query(true, LISTS_TABLE, new String[] {LIST_ID,
 				LIST_NAME}, LIST_ID + "=" + (int)id, null,
 				null, null, null, null);
@@ -797,8 +860,10 @@ public class DbAdapter
      */
     public static long getReceiptListFromShopList(long shopListId)
     {
+    	/*Log.d(TAG, "getReceiptListFromShopList:");
+    	Log.d(TAG, "shopListId: " + shopListId);*/
     	Cursor cursor = mDb.query(true, LISTS_TABLE, 
-    			new String[] {LIST_RECEIPT_LIST_ID},
+    			new String[] {LIST_ID, LIST_RECEIPT_LIST_ID},
 				LIST_ID + "=" + (int)shopListId, null,
 				null, null, null, null);
     	    	
@@ -814,7 +879,7 @@ public class DbAdapter
      */
     public static long getReceiptListFromShopList()
     {
-    	return getReceiptListFromShopList(currentShopListID);
+    	return getReceiptListFromShopList(DbAdapter.currentShopListID);
     }
         
     /**
@@ -830,7 +895,8 @@ public class DbAdapter
 	 * @param listID new current shop list ID
 	 */
 	public static void setCurrentShopListID(int listID) {
-		currentShopListID = listID;
+		//Log.d(TAG, "setCurrentShopListID: " + listID);
+		DbAdapter.currentShopListID = listID;
 	}
 	
     /**
@@ -845,8 +911,9 @@ public class DbAdapter
 	 * Set current receipt list ID
 	 * @param listID new current receipt list ID
 	 */
-	public static void setCurrentReceiptListID(int currentReceiptListID) {
-		DbAdapter.currentReceiptListID = currentReceiptListID;
+	public static void setCurrentReceiptListID(int newid) {
+		//Log.d(TAG, "setCurrentReceiptListID: " + newid);
+		DbAdapter.currentReceiptListID = newid;
 	}
     
 	/*
