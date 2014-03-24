@@ -680,39 +680,16 @@ public class DbAdapter
     
     public static long copyList(long oldListID, String newListName)
     {
-    	//int idxITEM_NAME, idxITEM_QUANTITY, idxITEM_PRICE, idxITEM_PURCHASED;
-    	//Cursor to old list
-    	/*Cursor oldList = mDb.query(ITEMS_TABLE, new String[] {ITEM_ID, ITEM_NAME,
-                ITEM_QUANTITY, ITEM_PRICE, ITEM_PURCHASED}, ITEM_LIST_ID + "=" + (int) oldListID, null, null, null, null);*/
     	int tmp = DbAdapter.currentShopListID;
     	DbAdapter.currentShopListID = (int) oldListID;
     	ArrayList<Item> items = DbAdapter.getAllShopItems();
     	DbAdapter.currentShopListID = tmp;
 
-    	/*
-    	//Get column index to each column
-    	idxITEM_NAME = oldList.getColumnIndex(ITEM_NAME);
-    	idxITEM_QUANTITY = oldList.getColumnIndex(ITEM_QUANTITY);
-    	idxITEM_PRICE = oldList.getColumnIndex(ITEM_PRICE);
-    	idxITEM_PURCHASED = oldList.getColumnIndex(ITEM_PURCHASED);
-    	*/
     	//Create new list
     	long newListID = createShopList(newListName);
     	//Log.d(TAG, "copyList:");
     	//Log.d(TAG, "oldListID: " + oldListID + " newListID: " + newListID);
     	
-    	//Go to first item
-    	/*
-    	if(oldList.moveToFirst())
-    	{
-	    	do{
-	    		createShopItem(oldList.getString(idxITEM_NAME), 
-	    				oldList.getInt(idxITEM_QUANTITY),
-	    				oldList.getFloat(idxITEM_PRICE),
-	    				oldList.getInt(idxITEM_PURCHASED), 
-	    				(int)newListID );
-	    	}while (oldList.moveToNext());
-    	}*/
     	for(Item it : items)
     	{
     		it.setListId(newListID);

@@ -69,42 +69,7 @@ public class ItemsMain extends Activity implements Update
         ab.setSubtitle(DbAdapter.getShopListName(DbAdapter.getCurrentShopListID()));
 
         //Fill data
-        /*
-    	TextView price = (TextView) this.findViewById(R.id.item_activity_price);
-    	TextView pricetxt = (TextView) this.findViewById(R.id.item_activity_price_txt);
-    	price.setText(String.format("%.2f",listCost()));*/
-    	
     	ListView listView = (ListView) findViewById(R.id.items_list_view);
-    	/*ArrayList<Item> items = null;
-    	if(Omniscient.isShopping())
-    	{
-    		items = DbAdapter.getAllReceiptItems();
-    		Log.d(TAG, "onCreate");
-    		Log.d(TAG, "current RECEIPT list:" + DbAdapter.getCurrentReceiptListID());
-    		for(Item i : items)
-    			Log.d(TAG, "item: " + i.getName());
-            adapter = new MyAdapter(this, 
-					R.layout.items_list, 
-					items);
-    		pricetxt.setVisibility(View.VISIBLE);
-    		price.setVisibility(View.VISIBLE);
-    	}
-    	else
-    	{
-    		items = DbAdapter.getAllShopItems();
-    		Log.d(TAG, "onCreate");
-    		Log.d(TAG, "current SHOP list: " + DbAdapter.getCurrentShopListID());
-    		for(Item i : items)
-    			Log.d(TAG, "item: " + i.getName());
-            adapter = new MyAdapter(this, 
-					R.layout.items_list, 
-					items);
-    		pricetxt.setVisibility(View.INVISIBLE);
-    		price.setVisibility(View.INVISIBLE);	
-    	}
-    	
-		listView.setAdapter(adapter);
-		listView.setClickable(true);*/
     	fillData();
 		
         registerForContextMenu(listView);
