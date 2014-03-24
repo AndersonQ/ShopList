@@ -6,7 +6,7 @@
     <!-- List -->
     <!-- List row -->
     <string name="no_lists">No Lists Yet</string>
-    <string name="item_timestamp_text_row">Created: </string>
+    <string name="item_timestamp_text_row">Created:</string>
 
     <!-- Add/Edit -->
     <string name="list_edit">Edit list</string>
