@@ -17,6 +17,8 @@ public class Omniscient
 	private static Application app;
 	/** ID of the item being used to whatever*/
 	private static long currentItemID;
+	/** ID of the list being used to whatever*/
+	private static long currentListID;
 	/** Shopping mode on/off*/
 	private static boolean shopping = false;
 	
@@ -44,4 +46,15 @@ public class Omniscient
 	{
 		Omniscient.shopping = shopping;
 	}
+
+	public static long getCurrentListID() 
+	{
+		return currentListID;
+	}
+
+	public static void setCurrentListID(long currentListID) 
+	{
+		Omniscient.currentListID = currentListID;
+	}
+	
 }
