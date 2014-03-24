@@ -58,6 +58,11 @@ public class MyAdapter extends ArrayAdapter<Item>
 		CheckBox purchasedChk;
 	    View view = convertView;
 		
+		//Get current item
+		Item item = items.get(position);
+		/*Log.d(TAG, "getView");
+		Log.d(TAG, "itemNane: " + item.getName() + " ID: " + item.getId());*/
+	    
         if(Omniscient.isShopping())
         {
         	float oldPrice;
@@ -74,8 +79,6 @@ public class MyAdapter extends ArrayAdapter<Item>
             view.setFocusableInTouchMode(true);
             view.setHapticFeedbackEnabled(true);
         	
-			//Get current item
-			Item item = items.get(position);
 	        nameText = (TextView) view.findViewById(R.id.item_name_row);
 	        quantText = (TextView) view.findViewById(R.id.item_quant_row);
 	        priceText = (TextView) view.findViewById(R.id.item_price_row);
@@ -83,12 +86,13 @@ public class MyAdapter extends ArrayAdapter<Item>
 	        if(compPrice)
 	        {
 	        	priceCompText = (TextView) view.findViewById(R.id.item_price_comp_row);
-	        	oldPrice = DbAdapter.getLowestPrice(item.getName());
-	        	if(oldPrice >= 0)
+	        	//oldPrice = DbAdapter.getLowestPrice(item.getName());
+	        	oldPrice = calculateLowestPrice(item);
+	        	if(oldPrice > 0)
 	        	{
 	        		priceCompText.setText(" / " + 
 	        				String.format("£%.2f", oldPrice));
-	        		if(Float.compare(item.getPrice(), oldPrice) > 0)
+	        		if(Float.compare(item.getPrice(), oldPrice) >= 0)
 	        			priceCompText.setTextColor(Color.GREEN);
 	        		else
 	        			priceCompText.setTextColor(Color.RED);
@@ -99,6 +103,7 @@ public class MyAdapter extends ArrayAdapter<Item>
 	        nameText.setText(item.getName());
 	        quantText.setText(String.valueOf(item.getQuantity()));
 	        priceText.setText(String.format("£%.2f",item.getPrice()));
+	        //Log.d(TAG, "ItemPrice: " + String.format("£%.2f",item.getPrice()));
 	        purchasedChk.setChecked(item.isPurchased());
 	        
 	        purchasedChk.setOnClickListener(new View.OnClickListener()
@@ -117,8 +122,9 @@ public class MyAdapter extends ArrayAdapter<Item>
 	       		   		if(!ret)//If there was a problem, log it
 	       		   			Log.e(TAG, "CheckBox: receipt item wasn't updated on DB! Name " + item.getName() + " Id " +item.getId());
 	       		   	}
-					//Update total cost
-					((ItemsMain) mContext).updateCost();
+					//Update displayed items //total cost
+	       		   	((Update) mContext).updateDisplayedData();
+					//((ItemsMain) mContext).updateCost();
 		        }
 	        });
         }
@@ -133,8 +139,6 @@ public class MyAdapter extends ArrayAdapter<Item>
             view.setFocusableInTouchMode(true);
             view.setHapticFeedbackEnabled(true);
             
-			//Get current item
-			Item item = items.get(position);
 	        nameText = (TextView) view.findViewById(R.id.item_name_row);
 	        quantText = (TextView) view.findViewById(R.id.item_quant_row);
 	        
@@ -174,6 +178,26 @@ public class MyAdapter extends ArrayAdapter<Item>
         });
 
 		return view;
+	}
+
+	/**
+	 * @param item
+	 * @return
+	 */
+	private float calculateLowestPrice(Item item) 
+	{
+		long id = item.getId();
+		float lower = Float.MAX_VALUE;
+		ArrayList<Item> items = DbAdapter.getPrices(item.getName());
+		/*Log.i(TAG, "calculateLowestPrice():");
+		Log.i(TAG, "ItemName: " + item.getName() + " ID: " + item.getId() + "price: " + item.getPrice());*/
+		for(Item it : items)
+		{
+			//Log.i(TAG, "itId: " + it.getId() + " price: " + it.getPrice());
+			if(it.getId() != id && lower > it.getPrice());
+				lower = it.getPrice();
+		}
+		return lower;
 	}
 
 	@Override
