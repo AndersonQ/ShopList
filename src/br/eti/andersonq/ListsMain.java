@@ -1,6 +1,7 @@
 package br.eti.andersonq;
 
 import br.eti.andersonq.shoplist.R;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ListActivity;
 import android.content.Context;
@@ -94,6 +95,17 @@ public class ListsMain extends ListActivity implements Update
         case android.R.id.home:
         	startItemMainActivity(DbAdapter.getCurrentShopListID());
         	return true;
+        case R.id.item_action_settings:
+    		startActivity(new Intent(this, SettingsActivity.class));
+    		return true;
+    	case R.id.item_action_about:
+    		//msgBox(ItemsMain.about, "About");
+    		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    		builder.setTitle(R.string.about);
+    		builder.setMessage(ItemsMain.about);
+    		builder.setNegativeButton(R.string.got_ti_msg, null);
+    		builder.create().show();
+    		return true;
         }
         return super.onMenuItemSelected(featureId, item);
     }

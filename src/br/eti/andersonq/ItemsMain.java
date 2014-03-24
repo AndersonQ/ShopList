@@ -41,7 +41,7 @@ public class ItemsMain extends Activity implements Update
     
     private Activity mActivity;
     
-    private static final String about = "This software was developed as a academic work by Anderson de França Queiroz\n" +
+    public static final String about = "This software was developed as a academic work by Anderson de França Queiroz\n" +
 			"for the class CS551 Mobile Software And Applications at University of Strathclyde\n" +
 			"Copyright (C) 2014  Anderson de França Queirozs\n\n" + 
 
