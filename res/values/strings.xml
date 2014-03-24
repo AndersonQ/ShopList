@@ -67,10 +67,12 @@
 	<string name="pref_title">Settings</string>
 	<string name="pref_title_auto_remove">Auto Remove</string>
 	<string name="pref_title_price_comparison">Price Comparison</string>
+	<string name="pref_title_auto_complete">Auto complete</string>
 	
 	<!-- Summaries -->
 	<string name="pref_summary_auto_remove">Auto remove purchased items</string>
 	<string name="pref_summary_price_comparison">Show whether last price of a item is higher or smaller than current price</string>
+	<string name="pref_summary_auto_complete">Show suggestios to items names</string>
 	<!-- End preferences -->
 	
 

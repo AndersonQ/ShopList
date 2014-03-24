@@ -15,5 +15,12 @@
 		android:summary="@string/pref_summary_price_comparison"
 		android:switchTextOn="YES"
 		android:switchTextOff="NO"/>
+	<SwitchPreference
+		android:defaultValue="false"
+		android:key="pref_auto_complete"
+		android:title="@string/pref_title_auto_complete"
+		android:summary="@string/pref_summary_auto_complete"
+		android:switchTextOn="YES"
+		android:switchTextOff="NO"/>
 
 </PreferenceScreen>
