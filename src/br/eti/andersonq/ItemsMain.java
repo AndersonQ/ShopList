@@ -119,6 +119,7 @@ public class ItemsMain extends Activity implements Update
         		editItem(-1);
                 return true;
         	case R.id.item_action_choose_list:
+        		stopShopping();
         		chooseList();
             	return true;
         	case R.id.item_action_go_shopping:
