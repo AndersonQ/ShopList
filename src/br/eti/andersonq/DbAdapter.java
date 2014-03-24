@@ -782,16 +782,38 @@ public class DbAdapter
     }
     
     /**
-     * Delete a list
+     * Delete a shop list and its correspondent receipt list
      * @param id of the list to be deleted
      * @return true success, false otherwise
      */
     public static boolean deleteList(long id) 
     {
-    	boolean listRet = mDb.delete(LISTS_TABLE, LIST_ID + "=" + id, null) == 1;
-    	mDb.delete(ITEMS_TABLE, ITEM_LIST_ID + "=" + (int)id, null);
+    	int receiptLidtId = 0;
+    	boolean ret;
+    	//Get correspondent receiptListId
+    	Cursor c = mDb.query(LISTS_TABLE, 
+    			new String[] {LIST_ID, LIST_RECEIPT_LIST_ID}, 
+    			LIST_ID + "=" + id, null, null, null, null);
+    	if(c.moveToFirst())
+    	{
+    		receiptLidtId = c.getInt(
+    				c.getColumnIndexOrThrow(LIST_RECEIPT_LIST_ID));
+    	}
     	
-    	return listRet;
+    	//Delete shop list		
+    	ret = (mDb.delete(LISTS_TABLE, LIST_ID + "=" + id, null) == 1);
+    	
+    	if(receiptLidtId != 0)//There is a receipt list
+    		//Delete correspondent receipt list
+    		ret = ret && 
+    			(mDb.delete(RECEIPT_LIST_TABLE, RECEIPT_LIST_ID + "=" + receiptLidtId, null) == 1);
+    	
+    	//Delete shop items
+    	mDb.delete(ITEMS_TABLE, ITEM_LIST_ID + "=" + (int)id, null);
+    	//Delete receipt items
+    	mDb.delete(RECEIPT_ITEMS_TABLE, RECEIPT_ITEM_LIST_ID + "=" + receiptLidtId, null);
+    	
+    	return ret;
     }
 
     /**
