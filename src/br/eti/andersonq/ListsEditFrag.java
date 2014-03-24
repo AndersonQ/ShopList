@@ -79,14 +79,15 @@ public class ListsEditFrag extends DialogFragment {
     {
         super.onStart();
         //Get arguments
-        Bundle args = getArguments();
+        /*Bundle args = getArguments();
         if (args != null) 
         	//Get Item id
         	mId = args.getInt(LIST_ID);
         else
         	//Set -1 so it know that a new item is being created
-        	mId = -1;
-        
+        	mId = -1;*/
+        mId = (int) Omniscient.getCurrentListID();
+
         mNameText = (EditText) myInflatedViewl.findViewById(R.id.list_edit_title);
         
         populateFields();
@@ -118,6 +119,12 @@ public class ListsEditFrag extends DialogFragment {
 	private void saveState() 
 	{
 		String listName = mNameText.getText().toString();
+		//Validate field
+		if(listName.length() == 0)
+		{
+			alerttMsg();
+			return;
+		}
 		
 		if (mId == -1)
 		{
@@ -130,5 +137,14 @@ public class ListsEditFrag extends DialogFragment {
 			DbAdapter.updateShopList(mId, listName);
 		}
 	}
-
+	
+	private void alerttMsg()
+	{
+		Activity act = getActivity();
+		AlertDialog.Builder builder = new AlertDialog.Builder(act);
+		builder.setTitle(R.string.error_title);
+		builder.setMessage(R.string.error_empty_msg);
+		builder.setNegativeButton(R.string.got_ti_msg, null);
+		builder.create().show();
+	}
 }
