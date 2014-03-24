@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -39,9 +40,12 @@ public class ListsCopyFrag extends DialogFragment {
         
         builder.setMessage(R.string.list_copy)
                .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-                   public void onClick(DialogInterface dialog, int id) {
-                	DbAdapter.copyList(mOldListID, mNewListName.getText().toString());
-                   	mUpdate.updateDisplayedData();
+                   public void onClick(DialogInterface dialog, int id) 
+                   {
+                	   /*Log.d(TAG, "PositiveButton: ");
+                	   Log.d(TAG, "DbAdapter.copyList(" + mOldListID + ", " + mNewListName.getText().toString());*/
+                	   DbAdapter.copyList(mOldListID, mNewListName.getText().toString());
+                	   mUpdate.updateDisplayedData();
                    }
                })
                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -78,10 +82,13 @@ public class ListsCopyFrag extends DialogFragment {
     {
         super.onStart();
         //Get arguments
-        Bundle args = getArguments();
+        /*Bundle args = getArguments();
         if (args != null) 
         	//Get Item id
-        	mOldListID = args.getInt(OLD_LIST_ID);
+        	mOldListID = args.getInt(OLD_LIST_ID);*/
+        mOldListID = (int) Omniscient.getCurrentListID();
+        /*Log.d(TAG, "onStart");
+        Log.d(TAG, "Omniscient.getCurrentListID(): " + Omniscient.getCurrentListID());*/
         
         mNewListName = (EditText) myInflatedViewl.findViewById(R.id.list_copy_new_name);        
     }
