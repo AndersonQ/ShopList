@@ -31,6 +31,7 @@ public class SettingsActivity extends PreferenceActivity
 {
 	public static final String KEY_AUTO_REMOVE = "pref_auto_remove";
 	public static final String KEY_PRICE_COMPARISON = "pref_price_comparison";
+	public static final String KEY_AUTO_COMPLETE = "pref_auto_complete";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

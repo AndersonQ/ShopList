@@ -7,11 +7,15 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
 public class ItemEditFrag extends DialogFragment {
@@ -20,7 +24,7 @@ public class ItemEditFrag extends DialogFragment {
 
 	final static String ITEM_ID = "item_id";
 	
-    private EditText mNameText;
+    private AutoCompleteTextView mNameText;
     private EditText mQuantText;
     private EditText mPriceText;
     //private EditText mPurchasesText;
@@ -96,21 +100,45 @@ public class ItemEditFrag extends DialogFragment {
 	@Override
     public void onStart() 
     {
-        super.onStart();
+		String [] itemsNames;
+		ArrayAdapter<String> autoCompletNames = null;
+    	//Load auto-complete preferences
+    	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+    	boolean autoComplete = sharedPref.getBoolean(SettingsActivity.KEY_AUTO_COMPLETE, false);
+		
+    	if(autoComplete)
+    	{
+			//Get names from DB
+	        itemsNames = DbAdapter.getNames();
+	        if(itemsNames == null)
+	        	autoComplete = false;
+	        else
+	        {
+	        	autoCompletNames = 
+	        		new ArrayAdapter<String>(this.getActivity(), 
+	        				android.R.layout.simple_dropdown_item_1line, 
+	        				itemsNames);
+	        }
+    	}
         
         if(mId == -1)//Create Item
         {
-	        mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
+	        mNameText = (AutoCompleteTextView) myInflatedViewl.findViewById(R.id.item_name);
+	        if(autoComplete)
+	        	mNameText.setAdapter(autoCompletNames);
 	        mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
         }
         else//Edit Item
         {
-	        mNameText = (EditText) myInflatedViewl.findViewById(R.id.item_name);
+	        mNameText = (AutoCompleteTextView) myInflatedViewl.findViewById(R.id.item_name);
+	        if(autoComplete)
+	        	mNameText.setAdapter(autoCompletNames);
 	        mQuantText = (EditText) myInflatedViewl.findViewById(R.id.item_quant);
 	        mPriceText = (EditText) myInflatedViewl.findViewById(R.id.item_price);
         }
         
         populateFields();
+        super.onStart();
     }
 
 	@Override
