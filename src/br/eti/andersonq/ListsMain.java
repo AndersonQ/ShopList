@@ -135,8 +135,11 @@ public class ListsMain extends ListActivity implements Update
         super.onListItemClick(l, v, position, id);
 
         //TODO: show selected list name
-        makeToast("List " + id + " selected");
+        makeToast("List " + DbAdapter.getShopListName(id) + " " + id + " selected");
         startItemMainActivity(id);
+        Log.d(TAG, "onListItemClick");
+        Log.d(TAG, "current ShopList: " + DbAdapter.getCurrentReceiptListID());
+        Log.d(TAG, "current ID: " + id);
     }
 
     @Override
@@ -191,9 +194,10 @@ public class ListsMain extends ListActivity implements Update
     {
     	ListsEditFrag fire = new ListsEditFrag();
     	FragmentManager manager = getFragmentManager();
-    	Bundle args = new Bundle();
-    	args.putInt(ListsEditFrag.LIST_ID, (int) id);
-    	fire.setArguments(args);
+    	/*Bundle args = new Bundle();
+    	args.putInt(ListsCopyFrag.OLD_LIST_ID, (int) id);
+    	fire.setArguments(args);*/
+    	Omniscient.setCurrentListID(id);
     	fire.show(manager, "FRAGMENT");
     }
     
@@ -201,9 +205,10 @@ public class ListsMain extends ListActivity implements Update
     {
     	ListsCopyFrag fire = new ListsCopyFrag();
     	FragmentManager manager = getFragmentManager();
-    	Bundle args = new Bundle();
+    	/*Bundle args = new Bundle();
     	args.putInt(ListsCopyFrag.OLD_LIST_ID, (int) id);
-    	fire.setArguments(args);
+    	fire.setArguments(args);*/
+    	Omniscient.setCurrentListID(id);
     	fire.show(manager, "FRAGMENT");
 	}
     
@@ -231,7 +236,8 @@ public class ListsMain extends ListActivity implements Update
         
         int tmp = (int) id;
         DbAdapter.setCurrentShopListID(tmp);
-        
+        Log.d(TAG, "startItemMainActivity");
+        Log.d(TAG, "id: " + id + " currentShopListId: " + DbAdapter.getCurrentShopListID());
         startActivityForResult(i, ACTIVITY_EDIT);
     }
 
