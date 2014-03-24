@@ -81,6 +81,12 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <!-- End Geral -->
+    
+    <!-- Alerts -->
+    <string name="error_title">Error!</string>
+    <string name="error_empty_msg">Empty field is not allowed!</string>
+    <string name="got_ti_msg">I got it!</string>
+	<!-- End Alerts -->
 
     
     <string name="title_activity_copy_list">Copy List</string>
