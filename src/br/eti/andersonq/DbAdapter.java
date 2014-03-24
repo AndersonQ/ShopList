@@ -901,6 +901,23 @@ public class DbAdapter
     {
     	return getReceiptListFromShopList(DbAdapter.currentShopListID);
     }
+    
+    /**
+     * Return id of the first shop list
+     * @return id of the first shop list
+     */
+    public static long getFirstShopList()
+    {
+    	long id = 1;
+    	Cursor c = mDb.query(LISTS_TABLE, new String[] {LIST_ID},
+    			null, null, null, null, null, null);
+    	
+    	if(c.moveToFirst())
+    	{
+    		c.getLong(c.getColumnIndexOrThrow(LIST_ID));
+    	}
+		return id;
+    }
         
     /**
      * Get current shop list ID

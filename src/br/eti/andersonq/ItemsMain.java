@@ -34,6 +34,8 @@ public class ItemsMain extends Activity implements Update
 	
     private static final int ACTIVITY_LIST_MAIN = 4;
     
+    private static boolean started = false;
+    
     private static MenuItem mStartShopping, mStopShopping;
     
     /*
@@ -46,6 +48,7 @@ public class ItemsMain extends Activity implements Update
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
+    	long currentShopListId;
         super.onCreate(savedInstanceState);
         MyAdapter adapter;
         Application app = getApplication();
@@ -54,6 +57,14 @@ public class ItemsMain extends Activity implements Update
         //mDbHelper = new DbAdapter(this);
         DbAdapter.open(this);
         ActionBar ab = getActionBar();
+        
+        //Get a shopList when app starts
+        if(started == false)
+        {
+        	currentShopListId = DbAdapter.getFirstShopList();
+        	DbAdapter.setCurrentShopListID((int) currentShopListId);	
+        }
+
         ab.setSubtitle(DbAdapter.getShopListName(DbAdapter.getCurrentShopListID()));
 
         //Fill data
