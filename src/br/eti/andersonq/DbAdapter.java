@@ -598,12 +598,13 @@ public class DbAdapter
 	
 	public static ArrayList<Item> getPrices(String itemName) 
 	{
-		int idxRECEIPT_ITEM_PRICE, idxRECEIPT_ITEM_ID;
+		int idxRECEIPT_ITEM_PRICE, idxRECEIPT_ITEM_ID, idxRECEIPT_ITEM_LIST_ID;
 		ArrayList<Item> items = null;
 		Cursor c;
 		String query = "select " + RECEIPT_ITEM_PRICE + ", " + 
 								RECEIPT_ITEM_NAME + ", " +
-								RECEIPT_ITEM_ID +
+								RECEIPT_ITEM_ID + ", " +
+								RECEIPT_ITEM_LIST_ID +
 								" from " + RECEIPT_ITEMS_TABLE +
 								" where " + RECEIPT_ITEM_NAME + 
 								" like '" + itemName + "';";
@@ -612,13 +613,14 @@ public class DbAdapter
 		{
 			items = new ArrayList<Item>();
 			idxRECEIPT_ITEM_PRICE = c.getColumnIndexOrThrow(RECEIPT_ITEM_PRICE);
-			idxRECEIPT_ITEM_ID = c.getColumnIndexOrThrow(RECEIPT_ITEM_ID);
+			//idxRECEIPT_ITEM_ID = c.getColumnIndexOrThrow(RECEIPT_ITEM_ID);
+			idxRECEIPT_ITEM_LIST_ID = c.getColumnIndexOrThrow(RECEIPT_ITEM_LIST_ID);
 			
 			do
 			{
-				items.add(new Item(c.getLong(idxRECEIPT_ITEM_ID), 
-									0,
-									"get_price_" + itemName, 
+				items.add(new Item(0, 
+									c.getInt(idxRECEIPT_ITEM_LIST_ID),
+									"get_price", 
 									0, 
 									c.getFloat(idxRECEIPT_ITEM_PRICE), 
 									0));
@@ -887,7 +889,7 @@ public class DbAdapter
 				null, null, null, null);
     	    	
     	return cursor.moveToFirst() == true ? 
-    		cursor.getLong(cursor.getColumnIndex(LIST_RECEIPT_LIST_ID)) : -1;
+    		cursor.getLong(cursor.getColumnIndexOrThrow(LIST_RECEIPT_LIST_ID)) : -1;
     }
     
     /**

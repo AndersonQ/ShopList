@@ -88,7 +88,7 @@ public class MyAdapter extends ArrayAdapter<Item>
 	        	priceCompText = (TextView) view.findViewById(R.id.item_price_comp_row);
 	        	//oldPrice = DbAdapter.getLowestPrice(item.getName());
 	        	oldPrice = calculateLowestPrice(item);
-	        	if(oldPrice > 0)
+	        	if(oldPrice >= 0)
 	        	{
 	        		priceCompText.setText(" / " + 
 	        				String.format("£%.2f", oldPrice));
@@ -186,18 +186,20 @@ public class MyAdapter extends ArrayAdapter<Item>
 	 */
 	private float calculateLowestPrice(Item item) 
 	{
-		long id = item.getId();
+		long listId = item.getListId();
 		float lower = Float.MAX_VALUE;
 		ArrayList<Item> items = DbAdapter.getPrices(item.getName());
 		/*Log.i(TAG, "calculateLowestPrice():");
 		Log.i(TAG, "ItemName: " + item.getName() + " ID: " + item.getId() + "price: " + item.getPrice());*/
 		for(Item it : items)
 		{
-			//Log.i(TAG, "itId: " + it.getId() + " price: " + it.getPrice());
-			if(it.getId() != id && lower > it.getPrice());
+			//Log.i(TAG, "itLId: " + it.getListId() + " price: " + it.getPrice());
+			//Log.i(TAG, "itemLid: " + listId + " price: " + item.getPrice());
+			if((it.getListId() != listId) && (lower > it.getPrice()))
 				lower = it.getPrice();
 		}
-		return lower;
+
+		return lower == Float.MAX_VALUE ? 0 : lower;
 	}
 
 	@Override
