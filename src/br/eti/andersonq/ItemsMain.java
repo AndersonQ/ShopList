@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import br.eti.andersonq.shoplist.R;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -38,6 +39,28 @@ public class ItemsMain extends Activity implements Update
     
     private static MenuItem mStartShopping, mStopShopping;
     
+    private Activity mActivity;
+    
+    private static final String about = "This software was developed as a academic work by Anderson de França Queiroz\n" +
+			"for the class CS551 Mobile Software And Applications at University of Strathclyde\n" +
+			"Copyright (C) 2014  Anderson de França Queirozs\n\n" + 
+
+			"This program is free software: you can redistribute it and/or modify\n" +
+			"it under the terms of the GNU General Public License as published by\n" +
+			"the Free Software Foundation, either version 3 of the License, or\n" +
+			"(at your option) any later version.\n\n" + 
+
+    		"This program is distributed in the hope that it will be useful,\n" + 
+    		"but WITHOUT ANY WARRANTY; without even the implied warranty of\n" +
+    		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" + 
+    		"GNU General Public License for more details.\n\n" +
+
+    		"You should have received a copy of the GNU General Public License\n" +
+    		"along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\n"
+
+    		+ "A copy of this program and its source code is available in\n"
+    		+ "http://github.com/AndersonQ/ShopList";
+    
     /*
      * ************************************************************************
      * ************************************************************************
@@ -57,6 +80,8 @@ public class ItemsMain extends Activity implements Update
         //mDbHelper = new DbAdapter(this);
         DbAdapter.open(this);
         ActionBar ab = getActionBar();
+        
+        mActivity = this;
         
         //Get a shopList when app starts
         if(started == false)
@@ -155,6 +180,14 @@ public class ItemsMain extends Activity implements Update
 	                fillData();
             	}
             	return true;
+        	case R.id.item_action_about:
+        		//msgBox(ItemsMain.about, "About");
+        		AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+        		builder.setTitle(R.string.about);
+        		builder.setMessage(ItemsMain.about);
+        		builder.setNegativeButton(R.string.got_ti_msg, null);
+        		builder.create().show();
+        		return true;
         }
         return false;
     }

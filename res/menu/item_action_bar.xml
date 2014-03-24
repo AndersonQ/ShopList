@@ -18,6 +18,9 @@
 	<item android:id="@+id/item_action_stop_shopping"
           android:title="@string/item_action_stop_shopping"
           android:showAsAction="never" />
+	<item android:id="@+id/item_action_about"
+          android:title="@string/about"
+          android:showAsAction="never" />
 	<item android:id="@+id/item_action_settings"
           android:title="@string/settings"
           android:showAsAction="never" />
