@@ -626,6 +626,26 @@ public class DbAdapter
 		}
 			return items;
 	}
+	
+	public static String[] getNames() 
+	{
+		int idxITEM_NAME;
+		ArrayList<String> names = new ArrayList<String>();
+		Cursor c;
+		String query = "select DISTINCT " + ITEM_NAME + " " +
+								" from " + ITEMS_TABLE + ";";
+		c = mDb.rawQuery(query, null);
+		if (c.moveToFirst())
+		{
+			idxITEM_NAME = c.getColumnIndexOrThrow(ITEM_NAME);
+			do
+			{
+				names.add(c.getString(idxITEM_NAME));
+				//Log.e(TAG, "name: " + names[i -1]);
+			}while(c.moveToNext());
+		}
+			return names.toArray(new String[names.size()]);
+	}
     
     /*
      * ************************************************************************
